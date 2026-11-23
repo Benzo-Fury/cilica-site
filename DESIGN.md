@@ -251,6 +251,7 @@ Corners are the app's soft radii, multiplied by `--sq`, which is 1.45 where `cor
 - **Primary:** a graphite fill with on-accent text and shadow-sm. Hover uses accent-hover. Pressing scales it to 0.97 on the snappy spring.
 - **Secondary:** a raised fill with a 0.5px line-strong ring and shadow-xs. Hover lifts it 1px to shadow-sm.
 - **Ghost:** transparent with ink-2 text. Hover adds a fill-hover wash.
+- **Cursor:** links (anything that navigates, including link-styled buttons such as GitHub and Download) show the pointer; buttons and in-page controls (chips, pills, segments, checkboxes, demo actions) keep the default arrow, as in the app and per the CSS UI spec; draggable graph nodes use grab / grabbing. Never set `cursor: pointer` on a button; hover feedback comes from the fill, lift or wash.
 - **Icon one-shots:** trailing arrows nudge (translateX 3px), lift (2px, −2px for external links) or drop (2px down for downloads) on hover.
 
 ### Download button (signature)
