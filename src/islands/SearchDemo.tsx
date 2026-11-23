@@ -72,7 +72,7 @@ export default function SearchDemo() {
       </div>
       <div className="search-ex" role="group" aria-label="Try another search">
         {EXAMPLES.map((e, i) => (
-          <button key={i} className={`chip${i === ex ? " on" : ""}`} onClick={() => setEx(i)} aria-pressed={i === ex}>{e.q}</button>
+          <button key={i} className={`chip${i === ex ? " on" : ""}`} onClick={() => setEx(i)} aria-pressed={i === ex}><span>{e.q}</span></button>
         ))}
       </div>
     </div>
