@@ -1,0 +1,1182 @@
+<title>Cilica site system</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+/* Layout: a reference page. Sticky contents rail on the left, one 880px reading column, live components set on the app's own grounds. */
+:root {
+  /* App tokens (Cilica/docs/design-system/tokens.json), light */
+  --bg-window:#eeecea; --bg-canvas:#fdfbfa; --bg-raised:#ffffff; --bg-sunken:#f5f3f1;
+  --ink:#1c1a18; --ink-2:#585551; --ink-3:#6b6763; --ink-4:#a7a4a1;
+  --fill-hover:#1c1a180d; --fill-press:#1c1a1817; --line:#1c1a1817; --line-strong:#1c1a1829;
+  --glass-fill:#ffffff94; --glass-fill-strong:#ffffffc7; --glass-highlight:#ffffffe6; --glass-edge:#1c1a181a; --scrim:#13110f33;
+  --accent:#302d2b; --accent-hover:#262321; --on-accent:#fdfbfa; --accent-text:#383532; --accent-soft:#eae7e5;
+  --rec:#e23532; --rec-soft:#ffe7e4; --success:#007760; --success-soft:#e4f9f1; --danger:#c22826; --danger-soft:#ffeae8;
+  --amber:#fa9524; --amber-text:#a54c00; --amber-soft:#ffedd7; --glow:#2563ff; --glow-soft:#e5ecff; --glow-text:#1d4fd8;
+  --sp1:#437eb9; --sp1s:#daecff; --sp2:#298b81; --sp2s:#d7f0ec; --sp3:#5f8756; --sp3s:#e1eede; --sp4:#95752a; --sp4s:#f3e8d3;
+  --sp5:#af6340; --sp5s:#fee3d8; --sp6:#ae5d78; --sp6s:#fee1e8; --sp7:#9167a3; --sp7s:#f1e4f8; --sp8:#61808c; --sp8s:#e2ebf0;
+  /* Ridgeline (the app icon's six ridges) */
+  --sky:#faf5ec; --r1:#efe5d6; --r2:#d9c9b4; --r3:#b5a695; --r4:#8f8275; --r5:#5a524a; --r6:#1c1a18;
+  --shadow-xs:0 1px 1px rgba(28,25,22,.06);
+  --shadow-sm:0 1px 2px rgba(28,25,22,.06),0 2px 6px rgba(28,25,22,.05);
+  --shadow-float:0 2px 6px rgba(28,25,22,.06),0 12px 28px -6px rgba(28,25,22,.16);
+  --shadow-overlay:0 4px 12px rgba(28,25,22,.08),0 28px 64px -12px rgba(28,25,22,.28);
+  /* Type */
+  --font-sans:"Inter","Inter Variable",ui-sans-serif,system-ui,sans-serif;
+  --font-mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  /* Shape, motion (bundle.css) */
+  --r-xs:5px; --r-sm:8px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-win:16px;
+  --spring-snappy:linear(0,.0351,.1194,.2283,.3452,.4595,.5646,.6575,.7366,.8023,.8554,.8974,.9298,.9542,.9722,.985,.9939,.9997,1.0033,1.0053,1.0061,1.0063,1.0059,1.0054,1.0047,1.0039,1.0032,1.0026,1); --snappy-d:330ms;
+  --spring-smooth:linear(0,.0188,.0666,.1327,.2091,.2898,.3706,.4487,.5221,.5897,.6509,.7054,.7535,.7954,.8316,.8625,.8887,.9107,.929,.9442,.9566,.9668,.9749,.9814,.9866,.9906,.9937,.9961,1); --smooth-d:380ms;
+  --spring-bouncy:linear(0,.0235,.0841,.1689,.2676,.3719,.4756,.5742,.6649,.7456,.8155,.8745,.923,.9616,.9913,1.0132,1.0286,1.0385,1.0439,1.0459,1.0453,1.0429,1.0392,1.0347,1.03,1.0252,1.0206,1.0163,1.0125,1.0092,1.0063,1.004,1.0021,1.0007,.9996,.9988,.9983,.998,.9979,.9979,1); --bouncy-d:720ms;
+  --spring-gentle:linear(0,.0373,.1231,.2294,.3399,.4451,.5403,.6235,.6946,.7542,.8035,.8437,.8764,.9026,.9236,.9402,.9534,.9637,.9719,.9782,.9832,.987,.99,.9923,.9941,.9955,.9965,.9974,1); --gentle-d:650ms;
+  --ease-out:cubic-bezier(.22,1,.36,1); --fast:120ms; --base:180ms; --slow:280ms;
+  --focus:0 0 0 2px var(--bg-canvas),0 0 0 4px var(--accent-text);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg-window:#131110; --bg-canvas:#1b1917; --bg-raised:#242220; --bg-sunken:#171514;
+  --ink:#ebe9e7; --ink-2:#b7b4b0; --ink-3:#989591; --ink-4:#575552;
+  --fill-hover:#ffffff0f; --fill-press:#ffffff1a; --line:#ffffff14; --line-strong:#ffffff24;
+  --glass-fill:#24211f94; --glass-fill-strong:#24211fc7; --glass-highlight:#ffffff24; --glass-edge:#ffffff1a; --scrim:#00000073;
+  --accent:#dad7d5; --accent-hover:#e7e4e2; --on-accent:#1b1917; --accent-text:#d3d0ce; --accent-soft:#353230;
+  --rec:#f85452; --rec-soft:#4b1d1b; --success:#52caa5; --success-soft:#12352a; --danger:#f97770; --danger-soft:#47211e;
+  --amber:#f79c36; --amber-text:#faaf5f; --amber-soft:#40250d; --glow:#3b7bff; --glow-soft:#1b2747; --glow-text:#8fb2ff;
+  --sp1:#77ace4; --sp1s:#213243; --sp2:#68b9ae; --sp2s:#1d3632; --sp3:#8eb486; --sp3s:#283426; --sp4:#c2a464; --sp4s:#382f1b;
+  --sp5:#dc9473; --sp5s:#412a20; --sp6:#db8da5; --sp6s:#41282f; --sp7:#bd97cf; --sp7s:#372b3d; --sp8:#90adb9; --sp8s:#293236;
+  --sky:#1b1917; --r1:#2a2724; --r2:#24211f; --r3:#1f1d1b; --r4:#191716; --r5:#141211; --r6:#0e0d0c;
+  --shadow-xs:0 1px 1px rgba(0,0,0,.4);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.45),0 0 0 .5px rgba(255,255,255,.06);
+  --shadow-float:0 2px 6px rgba(0,0,0,.4),0 16px 32px -8px rgba(0,0,0,.6),0 0 0 .5px rgba(255,255,255,.08);
+  --shadow-overlay:0 4px 12px rgba(0,0,0,.5),0 32px 72px -12px rgba(0,0,0,.75),0 0 0 .5px rgba(255,255,255,.1);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"] {
+  --bg-window:#131110; --bg-canvas:#1b1917; --bg-raised:#242220; --bg-sunken:#171514;
+  --ink:#ebe9e7; --ink-2:#b7b4b0; --ink-3:#989591; --ink-4:#575552;
+  --fill-hover:#ffffff0f; --fill-press:#ffffff1a; --line:#ffffff14; --line-strong:#ffffff24;
+  --glass-fill:#24211f94; --glass-fill-strong:#24211fc7; --glass-highlight:#ffffff24; --glass-edge:#ffffff1a; --scrim:#00000073;
+  --accent:#dad7d5; --accent-hover:#e7e4e2; --on-accent:#1b1917; --accent-text:#d3d0ce; --accent-soft:#353230;
+  --rec:#f85452; --rec-soft:#4b1d1b; --success:#52caa5; --success-soft:#12352a; --danger:#f97770; --danger-soft:#47211e;
+  --amber:#f79c36; --amber-text:#faaf5f; --amber-soft:#40250d; --glow:#3b7bff; --glow-soft:#1b2747; --glow-text:#8fb2ff;
+  --sp1:#77ace4; --sp1s:#213243; --sp2:#68b9ae; --sp2s:#1d3632; --sp3:#8eb486; --sp3s:#283426; --sp4:#c2a464; --sp4s:#382f1b;
+  --sp5:#dc9473; --sp5s:#412a20; --sp6:#db8da5; --sp6s:#41282f; --sp7:#bd97cf; --sp7s:#372b3d; --sp8:#90adb9; --sp8s:#293236;
+  --sky:#1b1917; --r1:#2a2724; --r2:#24211f; --r3:#1f1d1b; --r4:#191716; --r5:#141211; --r6:#0e0d0c;
+  --shadow-xs:0 1px 1px rgba(0,0,0,.4);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.45),0 0 0 .5px rgba(255,255,255,.06);
+  --shadow-float:0 2px 6px rgba(0,0,0,.4),0 16px 32px -8px rgba(0,0,0,.6),0 0 0 .5px rgba(255,255,255,.08);
+  --shadow-overlay:0 4px 12px rgba(0,0,0,.5),0 32px 72px -12px rgba(0,0,0,.75),0 0 0 .5px rgba(255,255,255,.1);
+  color-scheme:dark;
+}
+
+*,*::before,*::after { box-sizing:border-box; }
+html { -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
+body { margin:0; background:var(--bg-canvas); color:var(--ink); font-family:var(--font-sans); font-size:16px; line-height:26px; letter-spacing:-.008em; font-optical-sizing:auto; font-feature-settings:"cv05","cv08"; }
+::selection { background:var(--glow-soft); color:var(--ink); }
+:focus-visible { outline:none; box-shadow:var(--focus); border-radius:6px; }
+button { font:inherit; color:inherit; cursor:default; }
+a { color:var(--ink); text-decoration-color:var(--line-strong); text-underline-offset:3px; transition:text-decoration-color var(--fast) var(--ease-out); }
+a:hover { text-decoration-color:var(--ink); }
+.mono { font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+svg.i { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; flex:none; display:block; }
+body::before { content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:30; background:var(--bg-canvas); }
+
+/* ── Top bar ── */
+.top { position:sticky; top:env(safe-area-inset-top,0px); z-index:20; display:flex; justify-content:center; padding:12px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px)); pointer-events:none; }
+.top-in { pointer-events:auto; display:flex; align-items:center; gap:12px; width:min(1180px,100%); height:52px; padding:0 8px 0 12px; border-radius:16px;
+  background:var(--glass-fill-strong); -webkit-backdrop-filter:blur(32px) saturate(180%); backdrop-filter:blur(32px) saturate(180%); box-shadow:inset 0 0 0 .5px var(--glass-edge),var(--shadow-float); }
+.brand { display:flex; align-items:center; gap:10px; font-weight:640; letter-spacing:-.017em; font-size:15px; text-decoration:none; }
+.brand .sub { font-weight:450; color:var(--ink-3); letter-spacing:-.003em; font-size:13px; }
+.top .spacer { flex:1; }
+
+/* Segmented control (app SegmentedControl) */
+.seg { position:relative; display:inline-flex; padding:2px; gap:0; background:var(--fill-hover); border-radius:10px; }
+.seg button { position:relative; z-index:1; border:0; background:none; height:28px; padding:0 12px; font-size:13px; font-weight:500; color:var(--ink-2); border-radius:8px; transition:color var(--fast) var(--ease-out); display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+.seg button[aria-pressed="true"] { color:var(--ink); }
+.seg button:hover { color:var(--ink); }
+.seg .thumb { position:absolute; z-index:0; top:2px; left:0; height:28px; border-radius:8px; background:var(--bg-raised); box-shadow:var(--shadow-sm); transition:transform var(--smooth-d) var(--spring-smooth), width var(--smooth-d) var(--spring-smooth); }
+
+/* ── Shell ── */
+.shell { display:grid; grid-template-columns:200px minmax(0,1fr); gap:56px; width:min(1180px,100%); margin:0 auto; padding:40px max(16px,env(safe-area-inset-right,0px)) 120px max(16px,env(safe-area-inset-left,0px)); }
+.toc { position:sticky; top:96px; align-self:start; display:flex; flex-direction:column; gap:2px; font-size:13px; line-height:18px; }
+.toc a { position:relative; text-decoration:none; color:var(--ink-3); padding:6px 10px; border-radius:8px; transition:color var(--fast) var(--ease-out), background var(--fast) var(--ease-out); }
+.toc a:hover { color:var(--ink); background:var(--fill-hover); }
+.toc a.on { color:var(--ink); background:var(--fill-press); }
+main { min-width:0; max-width:880px; }
+section { padding-block:56px; border-top:.5px solid var(--line-strong); scroll-margin-top:84px; }
+section:first-child { border-top:0; padding-top:0; }
+h1,h2,h3 { text-wrap:balance; margin:0; }
+h1 { font-size:clamp(40px,5.6vw,64px); line-height:1.03; font-weight:660; letter-spacing:-.035em; }
+h2 { font-size:clamp(28px,3.4vw,36px); line-height:1.1; font-weight:640; letter-spacing:-.028em; margin-bottom:12px; }
+h3 { font-size:17px; line-height:24px; font-weight:620; letter-spacing:-.012em; }
+p { margin:0; }
+.lead { font-size:19px; line-height:30px; color:var(--ink-2); letter-spacing:-.011em; max-width:62ch; }
+.body { color:var(--ink-2); max-width:64ch; }
+.stack { display:flex; flex-direction:column; gap:16px; }
+.note { font-size:13px; line-height:18px; color:var(--ink-3); }
+.gap-l { margin-top:32px; }
+.cols2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+@media (max-width:860px) {
+  .shell { grid-template-columns:minmax(0,1fr); gap:0; padding-top:24px; }
+  .toc { display:none; }
+  .top .brand .sub { display:none; }
+  .cols2 { grid-template-columns:minmax(0,1fr); }
+}
+
+/* ── Hero preview over the ridgeline ── */
+.scene { position:relative; border-radius:20px; overflow:hidden; background:var(--sky); box-shadow:inset 0 0 0 .5px var(--line-strong); margin-top:32px; isolation:isolate; }
+.scene canvas { position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; z-index:-1; }
+.scene-in { padding:56px 48px 200px; display:flex; flex-direction:column; align-items:flex-start; gap:20px; }
+.scene-in h1 { max-width:12ch; }
+.scene-in .lead { max-width:46ch; color:var(--ink-2); }
+.scene-row { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+@media (max-width:600px) { .scene-in { padding:32px 20px 160px; } }
+
+/* ── Buttons ── */
+.btn { --h:40px; position:relative; display:inline-flex; align-items:center; justify-content:center; gap:8px; height:var(--h); padding:0 16px; border:0; border-radius:12px; font-size:15px; font-weight:560; letter-spacing:-.009em; text-decoration:none; white-space:nowrap;
+  transition:transform var(--snappy-d) var(--spring-snappy), background var(--fast) var(--ease-out), box-shadow var(--fast) var(--ease-out); }
+.btn:active { transform:scale(.97); transition-duration:80ms; }
+.btn-primary { background:var(--accent); color:var(--on-accent); box-shadow:var(--shadow-sm); }
+.btn-primary:hover { background:var(--accent-hover); }
+.btn-secondary { background:var(--bg-raised); color:var(--ink); box-shadow:inset 0 0 0 .5px var(--line-strong),var(--shadow-xs); }
+.btn-secondary:hover { transform:translateY(-1px); box-shadow:inset 0 0 0 .5px var(--line-strong),var(--shadow-sm); }
+.btn-ghost { background:none; color:var(--ink-2); }
+.btn-ghost:hover { background:var(--fill-hover); color:var(--ink); }
+.btn-xl { --h:48px; padding:0 20px 0 16px; border-radius:14px; font-size:16px; }
+.btn .os { position:relative; width:20px; height:20px; }
+.btn .os svg { position:absolute; inset:0; width:20px; height:20px; fill:currentColor; transition:opacity var(--base) var(--ease-out), transform var(--bouncy-d) var(--spring-bouncy); }
+.btn .os svg[data-off] { opacity:0; transform:scale(.6) rotate(-20deg); }
+.dl-label { display:inline-grid; }
+.dl-label span { grid-area:1/1; transition:opacity var(--base) var(--ease-out), transform var(--smooth-d) var(--spring-smooth); }
+.dl-label span[data-off] { opacity:0; transform:translateY(8px); }
+.dl-meta { font-size:12px; line-height:16px; color:var(--ink-3); }
+.btn .arrow { transition:transform var(--snappy-d) var(--spring-snappy); }
+.btn:hover .arrow { transform:translateY(2px); }
+.btn:hover .ext { transform:translate(2px,-2px); }
+.btn .ext { transition:transform var(--snappy-d) var(--spring-snappy); }
+
+.chip { display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 10px; border-radius:999px; font-size:12px; font-weight:550; background:var(--fill-hover); color:var(--ink-2); text-decoration:none; white-space:nowrap; transition:background var(--fast) var(--ease-out), color var(--fast) var(--ease-out); }
+a.chip:hover { background:var(--fill-press); color:var(--ink); }
+a.chip:hover .i { transform:translateX(2px); }
+a.chip .i { width:14px; height:14px; transition:transform var(--snappy-d) var(--spring-snappy); }
+.chip .dot { width:6px; height:6px; border-radius:50%; background:var(--success); }
+.kbd { display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 5px; border-radius:5px; font-size:11px; font-weight:550; color:var(--ink-3); background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong),0 1px 0 var(--line); font-family:var(--font-sans); }
+
+/* Element tile */
+.tile { display:inline-grid; grid-template-rows:auto 1fr auto; width:var(--s,34px); height:var(--s,34px); padding:calc(var(--s,34px)*.09); border-radius:calc(var(--s,34px)*.24); background:var(--accent); color:var(--on-accent); font-variant-numeric:tabular-nums; line-height:1; flex:none; }
+.tile b { align-self:center; justify-self:center; font-weight:660; font-size:calc(var(--s,34px)*.46); letter-spacing:-.04em; }
+.tile i, .tile u { font-style:normal; text-decoration:none; font-size:calc(var(--s,34px)*.16); font-weight:560; opacity:.75; }
+.tile u { justify-self:end; }
+.lockups { display:flex; flex-wrap:wrap; gap:24px; align-items:center; }
+.lockup-card { display:flex; flex-direction:column; gap:12px; align-items:flex-start; padding:24px; border-radius:14px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong); min-width:0; }
+
+/* Research list */
+.research { display:flex; flex-direction:column; }
+.rs { display:grid; grid-template-columns:150px minmax(0,1fr); gap:24px; padding-block:20px; border-top:.5px solid var(--line); }
+.rs:first-child { border-top:0; }
+.rs h3 { font-size:15px; }
+.rs .meta { font-size:12px; color:var(--ink-3); line-height:16px; margin-top:4px; }
+.rs dl { display:grid; grid-template-columns:88px minmax(0,1fr); gap:6px 16px; margin:0; font-size:14px; line-height:21px; }
+.rs dt { color:var(--ink-3); }
+.rs dd { margin:0; color:var(--ink-2); }
+@media (max-width:600px) { .rs { grid-template-columns:minmax(0,1fr); gap:8px; } .rs dl { grid-template-columns:minmax(0,1fr); gap:2px; } .rs dt { margin-top:8px; } }
+
+.gaps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; background:var(--line); border-radius:14px; overflow:hidden; margin-top:24px; box-shadow:inset 0 0 0 .5px var(--line-strong); }
+.gaps > div { background:var(--bg-raised); padding:20px; display:flex; flex-direction:column; gap:8px; }
+.gaps p { font-size:14px; line-height:21px; color:var(--ink-2); }
+@media (max-width:700px) { .gaps { grid-template-columns:minmax(0,1fr); } }
+
+/* Feature priority */
+.prio { list-style:none; margin:24px 0 0; padding:0; counter-reset:p; }
+.prio li { counter-increment:p; display:grid; grid-template-columns:32px minmax(0,1fr) auto; gap:4px 16px; align-items:baseline; padding:14px 0; border-top:.5px solid var(--line); }
+.prio li::before { content:counter(p); font-family:var(--font-mono); font-size:12px; color:var(--ink-3); }
+.prio strong { font-weight:600; font-size:15px; }
+.prio span.d { grid-column:2; font-size:14px; line-height:21px; color:var(--ink-2); }
+.tier { font-size:11px; font-weight:600; letter-spacing:.02em; text-transform:uppercase; padding:2px 8px; border-radius:999px; white-space:nowrap; }
+.tier.lead { background:var(--glow-soft); color:var(--glow-text); }
+.tier.sup { background:var(--fill-press); color:var(--ink-2); }
+.tier.det { background:var(--amber-soft); color:var(--amber-text); }
+.leftoff { margin-top:20px; padding:16px 18px; border-radius:12px; background:var(--bg-sunken); font-size:14px; line-height:21px; color:var(--ink-2); }
+
+/* Structures */
+.structs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:24px; }
+@media (max-width:980px) { .structs { grid-template-columns:minmax(0,1fr); } }
+.struct { display:flex; flex-direction:column; gap:14px; padding:16px; border-radius:16px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong),var(--shadow-xs);
+  transition:transform var(--snappy-d) var(--spring-snappy), box-shadow var(--base) var(--ease-out); }
+.struct:hover { transform:translateY(-2px); box-shadow:inset 0 0 0 .5px var(--line-strong),var(--shadow-float); }
+.struct h3 { font-size:17px; }
+.struct p { font-size:14px; line-height:21px; color:var(--ink-2); }
+.struct .k { font-size:12px; line-height:16px; color:var(--ink-3); font-weight:550; margin-bottom:2px; }
+.wire { position:relative; height:240px; border-radius:10px; overflow:hidden; background:var(--bg-sunken); box-shadow:inset 0 0 0 .5px var(--line); }
+.wire .b { position:absolute; border-radius:4px; background:var(--line-strong); }
+.wire .w { position:absolute; border-radius:6px; background:var(--bg-raised); box-shadow:var(--shadow-sm); }
+.wire .ink { background:var(--ink); }
+.wire .g { background:var(--glow); }
+.wire .a { background:var(--amber); }
+
+/* Swatches */
+.sw-group { margin-top:28px; }
+.sw-group h3 { margin-bottom:4px; }
+.sw-group > p { font-size:14px; line-height:21px; color:var(--ink-2); max-width:64ch; margin-bottom:14px; }
+.sws { display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:10px; }
+.sw { display:flex; flex-direction:column; gap:6px; font-size:12px; line-height:16px; min-width:0; }
+.sw .c { height:56px; border-radius:10px; box-shadow:inset 0 0 0 .5px var(--line-strong); }
+.sw b { font-weight:560; color:var(--ink); }
+.sw span { color:var(--ink-3); font-family:var(--font-mono); font-size:11px; }
+.ridge-ramp { display:flex; height:72px; border-radius:12px; overflow:hidden; box-shadow:inset 0 0 0 .5px var(--line-strong); }
+.ridge-ramp div { flex:1; }
+
+/* Type specimens */
+.spec { display:grid; grid-template-columns:120px minmax(0,1fr); gap:20px; align-items:baseline; padding-block:16px; border-top:.5px solid var(--line); }
+.spec .lbl { font-size:12px; line-height:16px; color:var(--ink-3); }
+.spec .lbl .mono { display:block; font-size:11px; margin-top:2px; }
+.t-hero { font-size:clamp(40px,6vw,76px); line-height:1.02; font-weight:660; letter-spacing:-.035em; }
+.t-h2 { font-size:clamp(30px,3.8vw,44px); line-height:1.08; font-weight:640; letter-spacing:-.03em; }
+.t-h3 { font-size:22px; line-height:28px; font-weight:620; letter-spacing:-.017em; }
+.t-lead { font-size:19px; line-height:30px; font-weight:430; letter-spacing:-.011em; color:var(--ink-2); }
+.t-body { font-size:16px; line-height:26px; font-weight:430; color:var(--ink-2); }
+.t-ui { font-size:14px; line-height:20px; font-weight:430; }
+.t-label { font-size:12px; line-height:16px; font-weight:550; }
+.t-mono { font-family:var(--font-mono); font-size:13px; line-height:18px; font-variant-numeric:tabular-nums; color:var(--ink-3); }
+@media (max-width:600px) { .spec { grid-template-columns:minmax(0,1fr); gap:6px; } }
+
+/* Layout diagram */
+.grid12 { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:8px; margin-top:16px; }
+.grid12 div { height:40px; border-radius:6px; background:var(--glow-soft); }
+.rhythm { display:flex; flex-direction:column; gap:0; margin-top:20px; font-size:13px; }
+.rhythm div { display:flex; align-items:center; gap:12px; color:var(--ink-3); }
+.rhythm i { display:block; width:40px; background:var(--amber-soft); border-radius:4px; }
+.tbl { width:100%; border-collapse:collapse; font-size:14px; line-height:20px; margin-top:16px; }
+.tbl th { text-align:left; font-weight:550; color:var(--ink-3); font-size:12px; padding:8px 12px 8px 0; border-bottom:.5px solid var(--line-strong); }
+.tbl td { padding:10px 12px 10px 0; border-bottom:.5px solid var(--line); color:var(--ink-2); vertical-align:top; }
+.tbl td:first-child { color:var(--ink); font-weight:520; white-space:nowrap; }
+.tbl-wrap { overflow-x:auto; }
+
+/* Materials */
+.mat { position:relative; height:300px; border-radius:16px; overflow:hidden; background:var(--sky); box-shadow:inset 0 0 0 .5px var(--line-strong); isolation:isolate; }
+.mat canvas { position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; z-index:-1; }
+.win { position:absolute; left:24px; right:24px; top:32px; bottom:-20px; border-radius:16px; background:var(--bg-canvas); box-shadow:var(--shadow-overlay); overflow:hidden; display:grid; grid-template-columns:150px minmax(0,1fr) 190px; grid-template-rows:40px 1fr; }
+.win .bar { grid-column:1/-1; display:flex; align-items:center; gap:7px; padding:0 14px; border-bottom:.5px solid var(--line-strong); }
+.win .bar i { width:11px; height:11px; border-radius:50%; background:var(--line-strong); }
+.win .side { background:var(--bg-sunken); border-right:.5px solid var(--line-strong); padding:12px 10px; display:flex; flex-direction:column; gap:6px; }
+.win .side span { height:8px; border-radius:4px; background:var(--line-strong); }
+.win .side span.on { background:var(--ink-4); }
+.win .doc { padding:20px 24px; display:flex; flex-direction:column; gap:9px; }
+.win .doc .h { height:16px; width:55%; border-radius:4px; background:var(--ink); opacity:.85; }
+.win .doc span { height:7px; border-radius:4px; background:var(--line-strong); }
+.win .asst { border-left:.5px solid var(--line-strong); padding:12px; display:flex; flex-direction:column; gap:8px; justify-content:flex-end; }
+.win .asst .bub { align-self:flex-end; height:28px; width:70%; border-radius:10px; background:var(--fill-press); }
+.win .asst .comp { position:relative; height:44px; border-radius:14px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong); }
+.win .asst .comp::after { content:""; position:absolute; left:14px; right:14px; bottom:-3px; height:3px; border-radius:3px; background:var(--glow); filter:blur(4px); opacity:.8; }
+.glass-pill { position:absolute; left:50%; bottom:28px; transform:translateX(-50%); display:flex; align-items:center; gap:10px; height:40px; padding:0 14px 0 12px; border-radius:999px; font-size:13px; font-weight:550;
+  background:var(--glass-fill); -webkit-backdrop-filter:blur(20px) saturate(180%); backdrop-filter:blur(20px) saturate(180%); box-shadow:inset 0 0 0 .5px var(--glass-edge),var(--shadow-float); white-space:nowrap; }
+.rec-dot { width:8px; height:8px; border-radius:50%; background:var(--rec); animation:breathe 2.4s ease-in-out infinite; }
+@keyframes breathe { 50% { opacity:.45; transform:scale(.8); } }
+.meter { display:flex; gap:2px; align-items:center; height:16px; }
+.meter i { width:2px; border-radius:2px; background:var(--ink-2); height:30%; animation:lvl 900ms linear infinite; }
+.meter i:nth-child(2){animation-delay:-200ms} .meter i:nth-child(3){animation-delay:-450ms} .meter i:nth-child(4){animation-delay:-650ms} .meter i:nth-child(5){animation-delay:-120ms}
+@keyframes lvl { 0%,100%{height:25%} 30%{height:90%} 60%{height:45%} }
+@media (max-width:640px) { .win { grid-template-columns:0 minmax(0,1fr) 0; } .win .side,.win .asst { visibility:hidden; } }
+.rules { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 24px; margin-top:20px; font-size:14px; line-height:21px; color:var(--ink-2); }
+.rules div { display:flex; gap:10px; }
+.rules svg { margin-top:2px; color:var(--ink-3); }
+@media (max-width:640px) { .rules { grid-template-columns:minmax(0,1fr); } }
+
+/* ── Component stage ── */
+.stage { margin-top:20px; padding:28px; border-radius:16px; background:var(--bg-sunken); box-shadow:inset 0 0 0 .5px var(--line); display:flex; flex-direction:column; gap:18px; }
+.stage.c { align-items:center; }
+.comp-h { display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin-top:40px; flex-wrap:wrap; }
+.comp-h:first-of-type { margin-top:24px; }
+.comp-h p { font-size:14px; color:var(--ink-3); line-height:20px; max-width:56ch; }
+@media (max-width:600px) { .stage { padding:18px 14px; } }
+
+/* Nav preview */
+.navp { display:flex; align-items:center; gap:4px; width:100%; height:52px; padding:0 8px 0 14px; border-radius:16px; background:var(--glass-fill-strong); -webkit-backdrop-filter:blur(32px) saturate(180%); backdrop-filter:blur(32px) saturate(180%); box-shadow:inset 0 0 0 .5px var(--glass-edge),var(--shadow-float); }
+.navp .links { display:flex; gap:2px; margin-left:16px; position:relative; }
+.navp .links a { position:relative; z-index:1; font-size:14px; padding:6px 10px; border-radius:8px; text-decoration:none; color:var(--ink-2); transition:color var(--fast) var(--ease-out); }
+.navp .links a:hover { color:var(--ink); }
+.navp .hov { position:absolute; z-index:0; top:0; height:32px; border-radius:8px; background:var(--fill-hover); opacity:0; transition:transform var(--snappy-d) var(--spring-snappy), width var(--snappy-d) var(--spring-snappy), opacity var(--fast) var(--ease-out); pointer-events:none; }
+.navp .btn { --h:34px; font-size:14px; padding:0 12px; border-radius:10px; }
+@media (max-width:760px) { .navp .links, .navp .gh { display:none; } }
+
+/* Assistant mock: note + panel */
+.amock { width:100%; display:grid; grid-template-columns:minmax(0,1fr) 300px; border-radius:16px; overflow:hidden; background:var(--bg-canvas); box-shadow:var(--shadow-overlay); }
+@media (max-width:760px) { .amock { grid-template-columns:minmax(0,1fr); } .amock .panel { border-left:0; border-top:.5px solid var(--line-strong); } }
+.amock .note { position:relative; padding:28px 28px 32px; display:flex; flex-direction:column; gap:12px; min-width:0; }
+.amock .note h4 { margin:0; font-size:22px; line-height:28px; font-weight:640; letter-spacing:-.02em; }
+.amock .note h5 { margin:6px 0 0; font-size:15px; line-height:22px; font-weight:600; }
+.amock .note p, .amock .note li { font-size:15px; line-height:24px; color:var(--ink); }
+.amock .note ul { margin:0; padding-left:20px; display:flex; flex-direction:column; gap:4px; }
+.meta-row { display:flex; gap:6px; flex-wrap:wrap; }
+.meta-row .chip { height:24px; }
+.marker { position:absolute; left:16px; width:2.5px; border-radius:2px; background:var(--glow); box-shadow:0 0 10px var(--glow); opacity:0; transition:transform var(--smooth-d) var(--spring-smooth), height var(--smooth-d) var(--spring-smooth), opacity var(--base) var(--ease-out); }
+.hl { border-radius:4px; transition:background 2s var(--ease-out); }
+.hl.lit { background:var(--glow-soft); transition-duration:var(--base); }
+.panel { border-left:.5px solid var(--line-strong); padding:16px; display:flex; flex-direction:column; gap:10px; min-width:0; }
+.bubble { align-self:flex-end; max-width:90%; padding:8px 12px; border-radius:14px; background:var(--fill-press); font-size:14px; line-height:20px; }
+.step { display:flex; align-items:center; gap:8px; font-size:13px; line-height:18px; color:var(--ink-3); }
+.step svg { width:15px; height:15px; }
+.shimmer { background:linear-gradient(90deg,var(--ink-3) 0%,var(--ink-3) 40%,var(--ink) 50%,var(--ink-3) 60%,var(--ink-3) 100%); background-size:250% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shim 1.6s linear infinite; }
+@keyframes shim { from{background-position:100% 0} to{background-position:-150% 0} }
+.diff { border-radius:14px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong),var(--shadow-sm); padding:12px; display:flex; flex-direction:column; gap:10px; font-size:14px; line-height:21px; transition:transform var(--smooth-d) var(--spring-smooth), opacity var(--base) var(--ease-out); transform-origin:top center; }
+.diff.gone { opacity:0; transform:translateY(-8px) scale(.97); pointer-events:none; }
+.diff .hd { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-3); font-weight:550; }
+.diff del { color:var(--danger); text-decoration-thickness:1.5px; background:var(--danger-soft); border-radius:3px; padding:0 2px; }
+.diff ins { text-decoration:none; background:var(--accent-soft); border-radius:3px; padding:0 2px; color:var(--ink); }
+.diff .acts { display:flex; gap:6px; justify-content:flex-end; }
+.diff .acts .btn { --h:28px; font-size:13px; padding:0 10px; border-radius:8px; }
+.receipt { border-radius:12px; padding:10px 12px; background:var(--bg-sunken); font-size:13px; line-height:19px; display:flex; flex-direction:column; gap:4px; opacity:0; transform:translateY(6px); transition:opacity var(--base) var(--ease-out), transform var(--bouncy-d) var(--spring-bouncy); }
+.receipt.in { opacity:1; transform:none; }
+.receipt b { font-weight:600; font-size:12px; color:var(--ink-3); }
+.receipt .row { display:flex; justify-content:space-between; gap:8px; color:var(--ink-2); }
+.receipt .row a { color:var(--ink); font-weight:550; text-decoration:none; }
+.composer { position:relative; margin-top:auto; border-radius:16px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong); padding:10px 10px 10px 12px; display:flex; align-items:flex-end; gap:8px; font-size:14px; color:var(--ink-4); }
+.composer .send { width:28px; height:28px; border-radius:50%; background:var(--fill-press); display:grid; place-items:center; color:var(--ink-3); flex:none; }
+.composer .send svg { width:15px; height:15px; }
+.composer::after { content:""; position:absolute; left:18px; right:18px; bottom:-4px; height:4px; border-radius:4px; background:var(--glow); filter:blur(6px); opacity:0; transition:opacity var(--slow) var(--ease-out); }
+.composer.working::after { opacity:.9; }
+.toast { position:absolute; right:16px; bottom:16px; display:flex; align-items:center; gap:10px; padding:8px 8px 8px 12px; border-radius:999px; font-size:13px; font-weight:520; background:var(--glass-fill-strong); -webkit-backdrop-filter:blur(32px) saturate(180%); backdrop-filter:blur(32px) saturate(180%); box-shadow:inset 0 0 0 .5px var(--glass-edge),var(--shadow-float);
+  opacity:0; transform:translateY(12px) scale(.96); transition:opacity var(--base) var(--ease-out), transform var(--bouncy-d) var(--spring-bouncy); }
+.toast.in { opacity:1; transform:none; }
+.toast svg { color:var(--success); width:16px; height:16px; }
+.toast button { border:0; height:26px; padding:0 10px; border-radius:999px; background:var(--fill-hover); font-size:12px; font-weight:560; }
+
+/* Guard ladder */
+.ladder { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; width:100%; }
+.rung { display:flex; flex-direction:column; gap:8px; padding:14px; border-radius:14px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong); font-size:13px; line-height:19px; color:var(--ink-2); }
+.rung b { font-size:14px; font-weight:600; color:var(--ink); display:flex; align-items:center; gap:8px; }
+.rung .guard { margin-top:auto; font-size:12px; color:var(--ink-3); display:flex; align-items:center; gap:6px; }
+.rung .guard svg { width:14px; height:14px; }
+.rung:nth-child(4) b svg { color:var(--danger); }
+@media (max-width:700px) { .ladder { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Transcript */
+.tx { width:100%; display:flex; flex-direction:column; gap:14px; padding:20px; border-radius:16px; background:var(--bg-canvas); box-shadow:var(--shadow-float); min-height:300px; }
+.tl { display:grid; grid-template-columns:32px minmax(0,1fr); gap:12px; }
+.av { width:28px; height:28px; border-radius:50%; display:grid; place-items:center; font-size:11px; font-weight:600; color:var(--ink); background:var(--c-s); box-shadow:0 0 0 1.5px var(--c); transition:background var(--base) var(--ease-out), box-shadow var(--base) var(--ease-out), transform var(--bouncy-d) var(--spring-bouncy); }
+.tl .who { display:flex; align-items:baseline; gap:8px; font-size:13px; font-weight:600; line-height:18px; flex-wrap:wrap; }
+.tl .who .mono { font-weight:400; font-size:12px; color:var(--ink-3); }
+.tl .txt { font-size:15px; line-height:23px; }
+.w { display:inline-block; animation:rise var(--slow) var(--spring-smooth) both; }
+@keyframes rise { from { opacity:0; transform:translateY(5px); } }
+.partial { color:var(--ink-3); }
+.ask { display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 4px 0 10px; border-radius:999px; background:var(--amber-soft); color:var(--amber-text); font-size:12px; font-weight:560; }
+.ask button { border:0; height:18px; padding:0 8px; border-radius:999px; background:var(--bg-raised); font-size:11px; font-weight:600; color:var(--ink); transition:transform var(--snappy-d) var(--spring-snappy); }
+.ask button:active { transform:scale(.92); }
+.vp { display:flex; align-items:center; gap:2px; height:32px; }
+.vp i { width:3px; border-radius:2px; background:var(--c); opacity:.85; transform-origin:center; transition:transform var(--smooth-d) var(--spring-smooth); }
+.person { display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:14px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong); width:100%; flex-wrap:wrap; }
+.person .nm { font-weight:600; font-size:15px; }
+.person .st { font-size:12px; color:var(--ink-3); }
+.person .vp { flex:1; min-width:160px; }
+.person:hover .vp i { transform:scaleY(1.25); }
+
+/* Provider picker */
+.prov { width:100%; display:flex; flex-direction:column; gap:14px; padding:20px; border-radius:16px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong); }
+.prov .row { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+.prov .lb { font-size:14px; font-weight:560; }
+.prov .seg { max-width:100%; overflow-x:auto; }
+.privacy { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2); padding-top:12px; border-top:.5px solid var(--line); }
+.privacy svg { width:16px; height:16px; color:var(--success); transition:transform var(--bouncy-d) var(--spring-bouncy); }
+.privacy span { transition:opacity var(--fast) var(--ease-out); }
+
+/* Proof chart */
+.proof { width:100%; padding:22px; border-radius:16px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong); }
+.proof h4 { margin:0 0 4px; font-size:15px; font-weight:600; }
+.proof svg text { font-family:var(--font-sans); font-size:12px; fill:var(--ink-3); }
+.proof svg .lbl { fill:var(--ink); font-weight:560; font-size:13px; }
+.proof svg .val { font-family:var(--font-mono); fill:var(--ink-2); font-size:12px; }
+.bar { transform-box:fill-box; transform-origin:left center; transform:scaleX(0); transition:transform 900ms var(--spring-gentle); }
+.proof.in .bar { transform:scaleX(1); }
+
+/* Pricing */
+.price { width:min(420px,100%); padding:24px; border-radius:20px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong),var(--shadow-sm); display:flex; flex-direction:column; gap:16px; }
+.price .amt { font-size:44px; line-height:1; font-weight:660; letter-spacing:-.035em; }
+.price ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; font-size:14px; line-height:20px; color:var(--ink-2); }
+.price li { display:flex; gap:8px; }
+.price li svg { width:16px; height:16px; color:var(--success); margin-top:2px; }
+.slot { width:min(420px,100%); border-radius:20px; border:1px dashed var(--line-strong); padding:20px; font-size:13px; color:var(--ink-3); line-height:19px; }
+
+/* Icons */
+.icons { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:8px; margin-top:20px; }
+.ic { display:flex; flex-direction:column; align-items:center; gap:10px; padding:18px 8px 14px; border-radius:12px; border:0; background:none; font-size:12px; color:var(--ink-3); transition:background var(--fast) var(--ease-out), color var(--fast) var(--ease-out); }
+.ic:hover { background:var(--fill-hover); color:var(--ink); }
+.ic svg { width:22px; height:22px; transition:transform var(--snappy-d) var(--spring-snappy); }
+.ic:hover .rot svg { transform:rotate(90deg); }
+.ic:hover .nud svg { transform:translateX(3px); }
+.ic:hover .tip svg { transform:rotate(-12deg) translateY(-1px); }
+.ic:hover .ring svg { animation:ring 500ms var(--ease-out); }
+.ic:hover .pop svg { transform:scale(1.15); }
+.ic:hover .wind svg { transform:rotate(-40deg); }
+.ic:hover .drop svg { transform:translateY(2px); }
+@keyframes ring { 20%{transform:rotate(14deg)} 40%{transform:rotate(-10deg)} 60%{transform:rotate(6deg)} 80%{transform:rotate(-3deg)} }
+.ic > span { display:block; }
+
+/* Motion demos */
+.springs { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+.spr { display:grid; grid-template-columns:110px minmax(0,1fr) auto; gap:16px; align-items:center; padding:12px 14px; border-radius:12px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong); }
+.spr b { font-weight:600; font-size:14px; display:block; }
+.spr small { font-size:12px; color:var(--ink-3); }
+.track { position:relative; height:28px; border-radius:999px; background:var(--bg-sunken); }
+.ball { position:absolute; top:4px; left:4px; width:20px; height:20px; border-radius:50%; background:var(--accent); }
+.track.go .ball { transform:translateX(calc(var(--tw) - 28px)); }
+.spr .btn { --h:30px; font-size:13px; padding:0 12px; border-radius:9px; }
+@media (max-width:600px) { .spr { grid-template-columns:minmax(0,1fr) auto; } .spr .track { grid-column:1/-1; grid-row:2; } }
+.moments { margin-top:24px; }
+
+/* Copy */
+.heads { display:flex; flex-direction:column; gap:12px; margin-top:20px; }
+.hcand { padding:22px 24px; border-radius:16px; background:var(--bg-raised); box-shadow:inset 0 0 0 .5px var(--line-strong); display:flex; flex-direction:column; gap:10px; }
+.hcand .t { font-size:clamp(26px,3.2vw,36px); line-height:1.08; font-weight:650; letter-spacing:-.03em; text-wrap:balance; }
+.hcand p { font-size:15px; line-height:24px; color:var(--ink-2); max-width:60ch; }
+.hcand .why { font-size:13px; color:var(--ink-3); line-height:19px; }
+.dodont { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:20px; }
+.dodont div { padding:16px 18px; border-radius:14px; font-size:14px; line-height:22px; }
+.dodont .do { background:var(--success-soft); }
+.dodont .dont { background:var(--danger-soft); }
+.dodont b { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; margin-bottom:6px; }
+.dodont ul { margin:0; padding-left:18px; color:var(--ink); }
+@media (max-width:640px) { .dodont { grid-template-columns:minmax(0,1fr); } }
+.open { margin:16px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; }
+.open li { display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; padding:12px 0; border-top:.5px solid var(--line); font-size:15px; line-height:23px; color:var(--ink-2); }
+.open li svg { margin-top:3px; color:var(--amber-text); }
+.open b { color:var(--ink); font-weight:600; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration:1ms !important; animation-iteration-count:1 !important; transition-duration:120ms !important; transition-timing-function:linear !important; }
+  .shimmer { animation:none; background:none; color:var(--ink-3); }
+  .btn:active, .ask button:active { transform:none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .top-in, .navp, .glass-pill, .toast { background:var(--bg-raised); -webkit-backdrop-filter:none; backdrop-filter:none; }
+}
+</style>
+
+<!-- Icon sprite (Lucide, ISC) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M7 7h10v10M7 17 17 7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-checkc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.38 3.62a1 1 0 0 1 3 3L7.37 18.64a2 2 0 0 1-.85.5l-2.87.84a.5.5 0 0 1-.62-.62l.84-2.87a2 2 0 0 1 .5-.85Z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.27 21a2 2 0 0 0 3.46 0"/><path d="M3.26 15.33A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.67C19.41 13.96 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.41 5.96-2.74 7.33"/></symbol>
+  <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="12" cy="13" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="18" r="2"/><path d="m6.7 7.2 3.8 4.4M17.3 6.3l-3.9 5.1M10.6 14.4l-3.2 3.3M13.6 14.2l3 2.7"/></symbol>
+  <symbol id="i-cmd" viewBox="0 0 24 24"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7M12 19V5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></symbol>
+</svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="os-mac" viewBox="0 0 24 24"><path d="M16.37 12.73c-.02-2.24 1.83-3.32 1.91-3.37-1.04-1.52-2.66-1.73-3.24-1.75-1.38-.14-2.69.81-3.39.81-.7 0-1.78-.79-2.92-.77-1.5.02-2.89.87-3.66 2.21-1.56 2.71-.4 6.72 1.12 8.92.74 1.08 1.63 2.29 2.79 2.24 1.12-.04 1.54-.72 2.89-.72s1.73.72 2.91.7c1.2-.02 1.96-1.09 2.7-2.17.85-1.25 1.2-2.46 1.22-2.52-.03-.01-2.34-.9-2.33-3.58ZM14.15 6.15c.62-.75 1.03-1.78.92-2.81-.88.04-1.95.59-2.58 1.33-.57.65-1.06 1.7-.93 2.71.98.08 1.98-.5 2.59-1.23Z"/></symbol>
+  <symbol id="os-win" viewBox="0 0 24 24"><path d="M3 5.2 10.4 4.2v7.1H3ZM11.3 4.1 21 2.8v8.5h-9.7ZM3 12.6h7.4v7.2L3 18.8ZM11.3 12.6H21v8.6l-9.7-1.3Z"/></symbol>
+  <symbol id="os-linux" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2.2c-2.3 0-3.6 1.9-3.6 4.4 0 1.3.2 2.2-.5 3.4-.9 1.4-2.6 3.6-2.6 6.4 0 .6.1 1.1.3 1.6-.8.4-1.8.6-1.6 1.6.2.9 1.6.8 2.7 1.3 1.1.5 2.1 1 2.9.6.5-.3.7-.8.7-1.3.6.1 1.2.2 1.7.2s1.2-.1 1.7-.2c0 .5.2 1 .7 1.3.8.4 1.8-.1 2.9-.6 1.1-.5 2.5-.4 2.7-1.3.2-1-.8-1.2-1.6-1.6.2-.5.3-1 .3-1.6 0-2.8-1.7-5-2.6-6.4-.7-1.2-.5-2.1-.5-3.4 0-2.5-1.3-4.4-3.6-4.4Zm-1.3 3.4c.4 0 .7.5.7 1.1s-.3 1.1-.7 1.1-.7-.5-.7-1.1.3-1.1.7-1.1Zm2.6 0c.4 0 .7.5.7 1.1s-.3 1.1-.7 1.1-.7-.5-.7-1.1.3-1.1.7-1.1ZM12 8.6c.9 0 2 .5 2 .9s-1.1 1.1-2 1.1-2-.7-2-1.1 1.1-.9 2-.9Zm0 3.3c1.9 0 3.1 2.2 3.1 4.6 0 1.6-1.2 2.6-3.1 2.6s-3.1-1-3.1-2.6c0-2.4 1.2-4.6 3.1-4.6Z"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#overview"><span class="tile" style="--s:30px" aria-hidden="true"><i>14</i><b>Si</b><u></u></span>Cilica <span class="sub">Site design system, draft 1</span></a>
+    <span class="spacer"></span>
+    <div class="seg" role="group" aria-label="Theme" id="themeSeg">
+      <span class="thumb"></span>
+      <button aria-pressed="false" data-t="light" aria-label="Light"><svg class="i" style="width:15px;height:15px"><use href="#i-sun"/></svg></button>
+      <button aria-pressed="true" data-t="system" aria-label="System"><svg class="i" style="width:15px;height:15px"><use href="#i-monitor"/></svg></button>
+      <button aria-pressed="false" data-t="dark" aria-label="Dark"><svg class="i" style="width:15px;height:15px"><use href="#i-moon"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="toc" aria-label="Contents">
+  <a href="#overview">Overview</a>
+  <a href="#research">What competitors do</a>
+  <a href="#features">What the page shows</a>
+  <a href="#structure">Page structure</a>
+  <a href="#brand">Brand marks</a>
+  <a href="#color">Colour</a>
+  <a href="#type">Type</a>
+  <a href="#layout">Layout</a>
+  <a href="#materials">Materials</a>
+  <a href="#components">Components</a>
+  <a href="#motion">Motion</a>
+  <a href="#icons">Icons</a>
+  <a href="#copy">Voice and copy</a>
+  <a href="#next">Open decisions</a>
+</nav>
+
+<main>
+<!-- ───────── Overview ───────── -->
+<section id="overview">
+  <h1>The cilica.si system</h1>
+  <p class="lead" style="margin-top:16px">The site is built from the app's own design system, scaled up for a page people scroll. Same tokens, springs, glass rules and voice. What's new here: a larger type scale, the ridgeline as the site's one piece of art, and live product mocks in place of screenshots.</p>
+  <div class="scene" id="heroScene">
+    <canvas id="ridge1" aria-hidden="true"></canvas>
+    <div class="scene-in">
+      <span class="chip" style="background:var(--glass-fill-strong)"><span class="dot"></span>Version 0.10.0 <svg class="i" style="width:14px;height:14px"><use href="#i-right"/></svg></span>
+      <h1>Notes that tidy themselves, with your say-so.</h1>
+      <p class="lead">Cilica is a Markdown notes app for Mac, Windows and Linux. Its assistant can read and edit every note, and shows you each change before it sticks. Calls become notes too, transcribed on your computer, with no bot in the room.</p>
+      <div class="scene-row">
+        <a class="btn btn-primary btn-xl dl" href="#components" data-dl>
+          <span class="os"><svg data-os="mac"><use href="#os-mac"/></svg><svg data-os="win" data-off><use href="#os-win"/></svg><svg data-os="linux" data-off><use href="#os-linux"/></svg></span>
+          <span class="dl-label"><span data-os="mac">Download for macOS</span><span data-os="win" data-off>Download for Windows</span><span data-os="linux" data-off>Download for Linux</span></span>
+        </a>
+        <a class="btn btn-secondary btn-xl" href="#components"><svg class="i"><use href="#i-github"/></svg>View the source</a>
+      </div>
+      <p class="dl-meta" data-dlmeta>Free. Apple silicon and Intel, macOS 14.4 or later. Under 20 MB.</p>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px">A preview of how the hero feels on the ridgeline. It sets at night in dark mode. The art is drawn in code with the same dithered pixels as the app's setup window, so it ships no image.</p>
+</section>
+
+<!-- ───────── Research ───────── -->
+<section id="research">
+  <h2>What competitors do</h2>
+  <p class="body">I scrolled the full landing pages of Granola, Anarlog, Obsidian, Reflect, Notion's meeting notes and Craft, and checked each against Cilica's features. What each one leads with, how it looks, and what the Cilica site keeps or avoids:</p>
+  <div class="research gap-l">
+    <div class="rs"><div><h3>Granola</h3><div class="meta">Meeting notes, the market leader</div></div>
+      <dl><dt>Leads with</dt><dd>"The AI notepad for back-to-back meetings." No bot is the second line. Then before, during and after the meeting, chat over every meeting, then customer logos and quotes.</dd>
+      <dt>Looks</dt><dd>Typewriter-style serif display, warm off-white paper, olive and lime fields, app windows set on photographic landscapes, a sticky contents list that tracks scroll.</dd>
+      <dt>Keep</dt><dd>One small, calm app window per idea. The landscape behind the product, which our ridgeline does without a photo.</dd>
+      <dt>Avoid</dt><dd>The serif-on-paper look, which every AI notetaker now copies. Logo walls we can't fill yet.</dd></dl></div>
+    <div class="rs"><div><h3>Anarlog</h3><div class="meta">Open-source meeting notes, formerly Hyprnote</div></div>
+      <dl><dt>Leads with</dt><dd>"The AI notepad for private meetings." Three small illustrations: invisible while you meet, local by default, own your AI stack. A GitHub stars button, three pricing plans, a signed founders' letter.</dd>
+      <dt>Looks</dt><dd>Plain white, handwritten script headings, everything centred, tiny product vignettes.</dd>
+      <dt>Keep</dt><dd>Privacy in three concrete claims. Open source as a reason to trust, with the source one click away. A short letter from the maker.</dd>
+      <dt>Avoid</dt><dd>Handwriting as personality. Centring every block.</dd></dl></div>
+    <div class="rs"><div><h3>Obsidian</h3><div class="meta">Local Markdown notes, the reference for "your files"</div></div>
+      <dl><dt>Leads with</dt><dd>"Sharpen your thinking." The full app with graph view and a phone. Three plain promises: your thoughts are yours, your mind is unique, your knowledge should last.</dd>
+      <dt>Looks</dt><dd>Dark graphite, tight sans headlines, one purple accent, feature cards with real UI inside them.</dd>
+      <dt>Keep</dt><dd>Short declarative headlines. The real app shown big and early. Ownership in plain words. Cilica opens Obsidian files, so say so.</dd>
+      <dt>Avoid</dt><dd>A wall of equal feature cards.</dd></dl></div>
+    <div class="rs"><div><h3>Reflect</h3><div class="meta">Notes with an assistant</div></div>
+      <dl><dt>Leads with</dt><dd>"Think better with Reflect." An 8-item icon grid, then "Optional AI": bring your own API key.</dd>
+      <dt>Looks</dt><dd>Space-black page, glowing purple orb, pill labels above every heading.</dd>
+      <dt>Keep</dt><dd>"Your key, billed by your provider" as a clear sentence.</dd>
+      <dt>Avoid</dt><dd>The dark glow-orb look. Icon grids that list features without showing them.</dd></dl></div>
+    <div class="rs"><div><h3>Notion meeting notes</h3><div class="meta">Meeting notes inside a workspace</div></div>
+      <dl><dt>Leads with</dt><dd>"We also have AI note-taking, yada yada yada." A recorder pill, then a composer asking for a launch plan.</dd>
+      <dt>Looks</dt><dd>White, black sans headlines, line drawings, product pieces cropped to one control each.</dd>
+      <dt>Keep</dt><dd>Cropping to one control: the recorder pill alone says "recording". A dry joke can work in a headline.</dd>
+      <dt>Avoid</dt><dd>Leaning on the joke when the product can speak for itself.</dd></dl></div>
+    <div class="rs"><div><h3>Craft</h3><div class="meta">Notes, docs and tasks</div></div>
+      <dl><dt>Leads with</dt><dd>"Your space for notes, tasks, and big ideas." Sky gradient, app window, carousels of people.</dd>
+      <dt>Looks</dt><dd>Soft sky blue, serif headline, glossy cards.</dd>
+      <dt>Keep</dt><dd>A sky that tells you the time of day.</dd>
+      <dt>Avoid</dt><dd>Customer stories we don't have.</dd></dl></div>
+  </div>
+  <div class="gaps">
+    <div><h3>Nobody shows the assistant editing</h3><p>Every competitor's assistant answers questions or drafts emails. None shows it changing your notes, with a diff you approve and an Undo. Cilica can, so that leads.</p></div>
+    <div><h3>"No bot" is now table stakes</h3><p>Granola and Anarlog both lead with it. Cilica matches it in one line, then wins on what they can't show: speaker labels on your computer and voices it learns.</p></div>
+    <div><h3>Nobody joins "your files" and "your model"</h3><p>Obsidian has open files with no meetings. Anarlog and Reflect let you bring your own key, but aren't full notes apps. Cilica does all three.</p></div>
+  </div>
+</section>
+
+<!-- ───────── Features ───────── -->
+<section id="features">
+  <h2>What the page shows, in order</h2>
+  <p class="body">This order follows from the gaps above and your brief. Notes come first and the assistant is the reason to switch. Meetings are a strong second act.</p>
+  <ol class="prio">
+    <li><strong>A notes app with Cilica inside</strong><span class="tier lead">Hero</span><span class="d">Hero demo: a real note, the side panel, Cilica edits a section while you watch. Marker sweep, inline steps, diff card, "What changed".</span></li>
+    <li><strong>Edits you approve</strong><span class="tier lead">Lead</span><span class="d">The guard ladder: reads run freely, additions get Undo, edits show a diff you accept hunk by hunk, deletes always ask. ⌘Z undoes a whole turn. Transcripts can't give it orders. Activity log, history, 30-day Trash.</span></li>
+    <li><strong>Meetings without a bot</strong><span class="tier lead">Lead</span><span class="d">Recorder pill and a live transcript writing itself, under 3 s behind speech. Works with Zoom, Meet, Teams, Slack, FaceTime and others. Summary, decisions, action items with owner and date, open questions, woven into what you jotted.</span></li>
+    <li><strong>It learns voices</strong><span class="tier lead">Lead</span><span class="d">"Is Person 2 Sam?", saved people with a voiceprint strip and talk share. The proof chart: 94–99% of speech labelled right, against 76–92% for Soniox live.</span></li>
+    <li><strong>Your model, your engine</strong><span class="tier lead">Lead</span><span class="d">A working picker: Anthropic, OpenAI-compatible (OpenRouter, Groq, LM Studio) or Ollama on your machine; Whisper on your computer, or Soniox, Deepgram, AssemblyAI, OpenAI with your key. The privacy line rewrites itself as you pick.</span></li>
+    <li><strong>Plain Markdown, Obsidian-compatible</strong><span class="tier sup">Support</span><span class="d">Wikilinks, embeds, tags, properties, renames that fix links. Graph view replaying how a vault grew. ⌘K search that understands "calls with Sam last week longer than 30 min".</span></li>
+    <li><strong>Private by construction</strong><span class="tier sup">Support</span><span class="d">SQLite on your machine, keys in the OS keychain, audio written to disk as it arrives. Open source under AGPL.</span></li>
+    <li><strong>Coming from somewhere else</strong><span class="tier sup">Support</span><span class="d">Import from Obsidian, Notion, Apple Notes, Granola, Otter and more. Re-import brings only what changed; any import undoes.</span></li>
+    <li><strong>The details</strong><span class="tier det">Details</span><span class="d">Home faces (word of the week, a quote, who did the talking), the swear jar, the floating meeting pill, thesaurus, spring toasts, keyboard everything. Small and fast: under 20 MB, under 150 MB idle, opens in under 1 s.</span></li>
+    <li><strong>Free, and download</strong><span class="tier sup">Close</span><span class="d">One free plan. GitHub and changelog. The download button again, set on the dark foreground ridge.</span></li>
+  </ol>
+  <div class="leftoff"><b style="color:var(--ink)">Left off:</b> the Claude Code bridge (experimental, terms risk). Scheduled tasks get one line inside "Edits you approve" (proposals you approve, nothing applied while you're away) rather than a section.</div>
+  <div class="leftoff"><b style="color:var(--ink)">Naming competitors.</b> I'd name them in two places only, both as plain facts. First, the speaker-label chart names Soniox, because a number with no comparison means little. Second, the import row names the apps people come from, because a Granola user looks for "Granola" there. No checkmark comparison table: it dates fast, it invites disputes, and it hands the page's attention to other products.</div>
+</section>
+
+<!-- ───────── Structure ───────── -->
+<section id="structure">
+  <h2>Page structure</h2>
+  <p class="body">Three ways to build the page in this world. All three use the same components, sections and copy; they differ in what the scroll does. Pick one at the outline review, or tell me what to combine.</p>
+  <div class="structs">
+    <article class="struct">
+      <div class="wire" aria-hidden="true">
+        <div class="b" style="left:0;right:0;top:0;height:70px;background:var(--sky)"></div>
+        <div class="b a" style="right:30px;top:22px;width:22px;height:22px;border-radius:50%"></div>
+        <div class="b" style="left:16px;top:16px;width:58%;height:12px;background:var(--ink)"></div>
+        <div class="b" style="left:16px;top:34px;width:40%;height:6px"></div>
+        <div class="b ink" style="left:16px;top:48px;width:60px;height:14px"></div>
+        <div class="b" style="left:0;right:0;top:70px;height:34px;background:var(--r1);border-radius:40% 60% 0 0/30px 30px 0 0"></div>
+        <div class="w" style="left:30px;right:30px;top:80px;height:48px"></div>
+        <div class="b" style="left:0;right:0;top:132px;height:34px;background:var(--r3);border-radius:60% 40% 0 0/26px 26px 0 0"></div>
+        <div class="b" style="left:0;right:0;top:166px;height:36px;background:var(--r5);border-radius:45% 55% 0 0/24px 24px 0 0"></div>
+        <div class="b" style="left:0;right:0;top:202px;height:38px;background:var(--r6);border-radius:55% 45% 0 0/22px 22px 0 0"></div>
+        <div class="b" style="left:50%;top:218px;width:70px;height:12px;transform:translateX(-50%);background:var(--bg-canvas)"></div>
+      </div>
+      <div><div class="k">Structure A</div><h3>Ridgeline descent</h3></div>
+      <p>The page walks down the six ridges of the app icon. The hero stands in the sky at dawn (night in dark mode). Each section sits on the next ridge, a shade deeper. The page ends on the ink foreground, where the download lives.</p>
+      <p><b style="color:var(--ink);font-weight:600">Signature:</b> as you scroll, the sun sinks behind the ridges, the ridges drift at their own depths, and the recorder light comes on as you reach meetings.</p>
+      <p><b style="color:var(--ink);font-weight:600">Risk:</b> sand-coloured bands lean towards the warm-paper look many AI sites share. Graphite, blue and real UI have to keep it sharp, and ridge colour must never tint the product mocks.</p>
+    </article>
+    <article class="struct">
+      <div class="wire" aria-hidden="true">
+        <div class="b ink" style="left:16px;top:16px;width:56px;height:56px;border-radius:12px"></div>
+        <div class="b" style="left:84px;top:22px;width:46%;height:10px;background:var(--ink)"></div>
+        <div class="b" style="left:84px;top:40px;width:36%;height:6px"></div>
+        <div class="b ink" style="left:84px;top:54px;width:56px;height:14px"></div>
+        <div style="position:absolute;left:16px;right:16px;top:88px;display:grid;grid-template-columns:repeat(6,1fr);gap:5px">
+          <i class="b g" style="position:static;height:30px;display:block"></i><i class="b g" style="position:static;height:30px;display:block;opacity:.6"></i><i class="b" style="position:static;height:30px;display:block;background:var(--rec);opacity:.7"></i><i class="b" style="position:static;height:30px;display:block;background:var(--sp2)"></i><i class="b" style="position:static;height:30px;display:block"></i><i class="b a" style="position:static;height:30px;display:block"></i>
+          <i class="b g" style="position:static;height:30px;display:block;opacity:.4"></i><i class="b" style="position:static;height:30px;display:block"></i><i class="b" style="position:static;height:30px;display:block;background:var(--rec);opacity:.4"></i><i class="b" style="position:static;height:30px;display:block;background:var(--sp2);opacity:.6"></i><i class="b" style="position:static;height:30px;display:block"></i><i class="b a" style="position:static;height:30px;display:block;opacity:.6"></i>
+        </div>
+        <div class="w" style="left:16px;right:16px;top:162px;height:62px"></div>
+      </div>
+      <div><div class="k">Structure B</div><h3>Element tiles</h3></div>
+      <p>The Si tile becomes the page's grid. The hero is one large tile beside the app window. Features form a small periodic table grouped into families (notes, Cilica, meetings, voices, providers, details), and choosing a tile opens its live demo full width below.</p>
+      <p><b style="color:var(--ink);font-weight:600">Signature:</b> tiles carry real figures in the corners the way elements carry atomic numbers: "3 s" behind speech, "94–99%" speaker labels, "&lt;1 s" to open.</p>
+      <p><b style="color:var(--ink);font-weight:600">Risk:</b> it can turn into a gimmick, and from a distance it reads as a bento grid, the category's default. Hiding demos behind tiles also means fewer people see them.</p>
+    </article>
+    <article class="struct">
+      <div class="wire" aria-hidden="true">
+        <div class="b" style="left:50%;top:16px;width:60%;height:12px;transform:translateX(-50%);background:var(--ink)"></div>
+        <div class="w" style="left:20%;right:20%;top:38px;height:30px;border-radius:12px"></div>
+        <div class="b g" style="left:26%;right:26%;top:68px;height:3px;filter:blur(2px)"></div>
+        <div class="b" style="left:22px;top:86px;width:8px;height:8px;border-radius:50%;background:var(--ink-4)"></div><div class="b" style="left:36px;top:87px;width:34%;height:6px"></div>
+        <div class="w" style="left:36px;right:22px;top:100px;height:34px"></div>
+        <div class="b" style="left:22px;top:144px;width:8px;height:8px;border-radius:50%;background:var(--ink-4)"></div><div class="b" style="left:36px;top:145px;width:42%;height:6px"></div>
+        <div class="w" style="left:36px;right:22px;top:158px;height:34px"></div>
+        <div class="w" style="left:36px;right:40%;top:202px;height:28px;background:var(--bg-canvas)"></div>
+      </div>
+      <div><div class="k">Structure C</div><h3>One Cilica turn</h3></div>
+      <p>The whole page is a single turn of the assistant. The hero is the composer with "Show me what you can do" typed in. Scrolling sends it, and each section arrives as a step ("Reading your notes…", "Joining your 10:00 call, no bot…", "Asking before I delete…") that opens into its demo. It ends on the "What changed" receipt, which holds the download.</p>
+      <p><b style="color:var(--ink);font-weight:600">Signature:</b> the page uses the product's own grammar of steps, shimmer, and receipt from top to bottom.</p>
+      <p><b style="color:var(--ink);font-weight:600">Risk:</b> a skimmer may take it for a chatbot page. The meeting story has to be told in the assistant's voice.</p>
+    </article>
+  </div>
+  <p class="note" style="margin-top:16px">Also considered: the page as one long note; a pinned app window that the scroll drives through every feature; a day from dawn to night; the guard ladder as the spine. Any of these can come back.</p>
+</section>
+
+<!-- ───────── Brand ───────── -->
+<section id="brand">
+  <h2>Brand marks</h2>
+  <p class="body">Three marks, each with one job. The wordmark names the product. The Ridgeline app icon is what people see in their Dock. The Si tile is new for the web: silicon is element 14, its symbol is Si, and that's the domain. It works as the favicon, the footer mark and the corner of the social card.</p>
+  <div class="lockups gap-l">
+    <div class="lockup-card"><span style="font-size:40px;font-weight:640;letter-spacing:-.03em;line-height:1">Cilica</span><span class="note">Wordmark. Inter, weight 640.</span></div>
+    <div class="lockup-card"><svg width="72" height="72" viewBox="0 0 512 512" aria-label="Cilica app icon"><defs><clipPath id="tileclip"><rect width="512" height="512" rx="116"/></clipPath></defs><g clip-path="url(#tileclip)"><rect width="512" height="512" fill="#faf5ec"/><g transform="scale(8)"><path d="M-32 22.0 Q-16 17 0 22 T32 22 T64 22 T96 22 V64 H-32Z" fill="#efe5d6"/><path d="M-9 29.5 Q7 24.9 23 29.5 T55 29.5 T87 29.5 T119 29.5 V64 H-32Z" fill="#d9c9b4"/><path d="M-18 37.0 Q-2 32.8 14 37 T46 37 T78 37 T110 37 V64 H-32Z" fill="#b5a695"/><path d="M-27 44.5 Q-11 40.7 5 44.5 T37 44.5 T69 44.5 T101 44.5 V64 H-32Z" fill="#8f8275"/><path d="M-4 52.0 Q12 48.6 28 52 T60 52 T92 52 T124 52 V64 H-32Z" fill="#5a524a"/><path d="M-13 59.5 Q3 56.5 19 59.5 T51 59.5 T83 59.5 T115 59.5 V64 H-32Z" fill="#1c1a18"/></g></g><rect x="3" y="3" width="506" height="506" rx="113" fill="none" stroke="#1c1a18" stroke-opacity="0.1" stroke-width="6"/></svg><span class="note">Ridgeline. Six ridges, sand to ink.</span></div>
+    <div class="lockup-card"><span class="tile" style="--s:72px"><i>14</i><b>Si</b><u>28.085</u></span><span class="note">Si tile. Accent ground, follows theme.</span></div>
+    <div class="lockup-card" style="flex-direction:row;align-items:center;gap:10px"><span class="tile" style="--s:26px"><i>14</i><b>Si</b><u></u></span><span style="font-weight:640;letter-spacing:-.017em">cilica.si</span></div>
+  </div>
+</section>
+
+<!-- ───────── Colour ───────── -->
+<section id="color">
+  <h2>Colour</h2>
+  <p class="body">Monochrome first, as in the app. Graphite does the layout. Each colour on the page has one meaning, taken from the app, so the site teaches the product's language: blue is Cilica working, red is recording, amber is your week, and the speaker colours are people. Values below follow the theme switch at the top.</p>
+  <div class="sw-group"><h3>Grounds and ink</h3><p>Warm graphite, never pure black or white. Text uses ink, ink-2 for body copy, ink-3 for captions and timecodes.</p><div class="sws" data-sw="bg-canvas,bg-raised,bg-sunken,bg-window,ink,ink-2,ink-3,line-strong"></div></div>
+  <div class="sw-group"><h3>Accent</h3><p>One accent button per view, usually Download. Near-black in light, near-white in dark.</p><div class="sws" data-sw="accent,accent-hover,on-accent,accent-soft"></div></div>
+  <div class="sw-group"><h3>Signals</h3><p>Cilica blue only appears where the assistant is working: the glow under the composer, the reading marker, the text it just touched. Amber belongs to Home's faces and the sun. Red is recording and nothing else.</p><div class="sws" data-sw="glow,glow-soft,amber,amber-soft,rec,rec-soft,success,danger"></div></div>
+  <div class="sw-group"><h3>Speakers</h3><p>Only on avatar rings, name dots and voiceprints. Transcript text stays ink.</p><div class="sws" data-sw="sp1,sp2,sp3,sp4,sp5,sp6,sp7,sp8"></div></div>
+  <div class="sw-group"><h3>Ridgeline</h3><p>The icon's six ridges, from sky to foreground. They're used only in the scene art and the section bands of Structure A, never behind body text below ridge 3.</p><div class="ridge-ramp"><div style="background:var(--sky)"></div><div style="background:var(--r1)"></div><div style="background:var(--r2)"></div><div style="background:var(--r3)"></div><div style="background:var(--r4)"></div><div style="background:var(--r5)"></div><div style="background:var(--r6)"></div></div></div>
+</section>
+
+<!-- ───────── Type ───────── -->
+<section id="type">
+  <h2>Type</h2>
+  <p class="body">Inter, the face the app bundles, with optical sizing on so large sizes tighten the way SF Display does. Using the app's face keeps the site and the product reading as one thing. Geist Mono is only for timecodes, figures and keys. Newsreader, the app's optional note serif, appears only inside note mocks that show the serif setting. The scale below adds three larger steps on top of the app's own scale.</p>
+  <div class="gap-l">
+    <div class="spec"><div class="lbl">Hero<span class="mono">76/1.02 · 660 · −3.5%</span></div><div class="t-hero">Notes that tidy themselves.</div></div>
+    <div class="spec"><div class="lbl">Section<span class="mono">44/1.08 · 640 · −3%</span></div><div class="t-h2">Edits you approve, one hunk at a time.</div></div>
+    <div class="spec"><div class="lbl">Sub-feature<span class="mono">22/28 · 620</span></div><div class="t-h3">It asks before it deletes. Always.</div></div>
+    <div class="spec"><div class="lbl">Lead<span class="mono">19/30 · 430</span></div><div class="t-lead">Cilica records your mic and the computer's audio, so it works with any meeting app. Nothing joins the call.</div></div>
+    <div class="spec"><div class="lbl">Body<span class="mono">16/26 · 430</span></div><div class="t-body">Live lines appear under three seconds behind speech. When the call ends, a slower, more careful pass replaces them.</div></div>
+    <div class="spec"><div class="lbl">UI (mocks)<span class="mono">14/20 · app body</span></div><div class="t-ui">Moved Pricing interview, Marco to Product</div></div>
+    <div class="spec"><div class="lbl">Label<span class="mono">12/16 · 550</span></div><div class="t-label">Apple silicon and Intel · macOS 14.4 or later</div></div>
+    <div class="spec"><div class="lbl">Mono<span class="mono">13/18 · Geist Mono</span></div><div class="t-mono">24:10 · 94–99% · v0.10.0 · ⌘K</div></div>
+  </div>
+</section>
+
+<!-- ───────── Layout ───────── -->
+<section id="layout">
+  <h2>Layout</h2>
+  <p class="body">A 12-column grid at 1200px, 24px gutters, collapsing to one column under 760px with a 16px side gutter. Product mocks are as wide as the content allows. Copy sits beside a mock or above it, never over it.</p>
+  <div class="grid12" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>Measure</th><th>Desktop</th><th>Phone</th><th>Use</th></tr></thead>
+    <tbody>
+      <tr><td>Page</td><td>1200px max</td><td>100% − 32px</td><td>Content width</td></tr>
+      <tr><td>Copy</td><td>60ch</td><td>100%</td><td>Leads and body text</td></tr>
+      <tr><td>Section gap</td><td>160px</td><td>96px</td><td>Between sections</td></tr>
+      <tr><td>Heading to copy</td><td>16px</td><td>12px</td><td>Tight groups</td></tr>
+      <tr><td>Copy to mock</td><td>48px</td><td>32px</td><td>Text to product</td></tr>
+      <tr><td>Mock window</td><td>16px radius</td><td>14px radius</td><td>The app window, concentric with its contents</td></tr>
+      <tr><td>Base unit</td><td colspan="2">4px (app spacing scale)</td><td>All gaps are multiples</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ───────── Materials ───────── -->
+<section id="materials">
+  <h2>Materials</h2>
+  <p class="body">The same two materials as the app. The product window is an opaque sheet with hairline splits and the overlay shadow. Glass is only for what floats: the nav bar, the recorder pill, toasts. Both sit on the ridgeline here.</p>
+  <div class="mat gap-l" id="matScene">
+    <canvas id="ridge2" aria-hidden="true"></canvas>
+    <div class="win" aria-hidden="true">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="side"><span style="width:70%"></span><span style="width:50%"></span><span class="on" style="width:80%"></span><span style="width:60%"></span><span style="width:40%"></span></div>
+      <div class="doc"><div class="h"></div><span style="width:90%"></span><span style="width:96%"></span><span style="width:70%"></span><span style="width:84%;margin-top:8px"></span><span style="width:60%"></span></div>
+      <div class="asst"><div class="bub"></div><div class="comp"></div></div>
+    </div>
+    <div class="glass-pill"><span class="rec-dot"></span><span class="mono">12:48</span><span class="meter"><i></i><i></i><i></i><i></i><i></i></span><span style="color:var(--ink-2)">Weekly 1:1 with Sam</span></div>
+  </div>
+  <div class="rules">
+    <div><svg class="i"><use href="#i-check"/></svg><span>Glass gets its edge from a 0.5px glass-edge and its shadow. No inner highlight, no inner glow.</span></div>
+    <div><svg class="i"><use href="#i-check"/></svg><span>No glass on glass, and at most three blurred layers on screen.</span></div>
+    <div><svg class="i"><use href="#i-check"/></svg><span>Every rounded rectangle is a squircle where the browser supports <span class="mono">corner-shape</span>, plain radius elsewhere.</span></div>
+    <div><svg class="i"><use href="#i-check"/></svg><span>Reduce transparency turns every glass layer into the opaque raised ground.</span></div>
+  </div>
+</section>
+
+<!-- ───────── Components ───────── -->
+<section id="components">
+  <h2>Components</h2>
+  <p class="body">Every piece the page needs, live. The product mocks are rebuilt in HTML from the app's components, so they animate, follow the theme and stay sharp. Real screenshots appear in one gallery strip near the end, as proof that the mocks match the app.</p>
+
+  <div class="comp-h"><h3>Navigation</h3><p>Floating glass bar. A hover wash slides between links as one element.</p></div>
+  <div class="stage">
+    <nav class="navp" aria-label="Example navigation">
+      <a class="brand" href="#components"><span class="tile" style="--s:26px" aria-hidden="true"><i>14</i><b>Si</b><u></u></span>Cilica</a>
+      <div class="links" id="navLinks"><span class="hov"></span><a href="#components">Features</a><a href="#components">Meetings</a><a href="#components">Privacy</a><a href="#components">Pricing</a><a href="#components">Changelog</a></div>
+      <span style="flex:1"></span>
+      <a class="btn btn-ghost gh" href="#components" style="--h:34px;font-size:14px;padding:0 10px"><svg class="i" style="width:16px;height:16px"><use href="#i-github"/></svg>GitHub</a>
+      <a class="btn btn-primary dl" href="#components" data-dl><span class="os" style="width:16px;height:16px"><svg data-os="mac" style="width:16px;height:16px"><use href="#os-mac"/></svg><svg data-os="win" data-off style="width:16px;height:16px"><use href="#os-win"/></svg><svg data-os="linux" data-off style="width:16px;height:16px"><use href="#os-linux"/></svg></span>Download</a>
+    </nav>
+  </div>
+
+  <div class="comp-h"><h3>Download button</h3><p>Detects the visitor's system and shows its logo. The icon and label swap with a spring when the system changes. Use the switch below to preview each one.</p></div>
+  <div class="stage c">
+    <div class="seg" role="group" aria-label="Preview system" id="osSeg"><span class="thumb"></span>
+      <button data-os="mac" aria-pressed="true">macOS</button><button data-os="win" aria-pressed="false">Windows</button><button data-os="linux" aria-pressed="false">Linux</button>
+    </div>
+    <a class="btn btn-primary btn-xl dl" href="#components" data-dl>
+      <span class="os"><svg data-os="mac"><use href="#os-mac"/></svg><svg data-os="win" data-off><use href="#os-win"/></svg><svg data-os="linux" data-off><use href="#os-linux"/></svg></span>
+      <span class="dl-label"><span data-os="mac">Download for macOS</span><span data-os="win" data-off>Download for Windows</span><span data-os="linux" data-off>Download for Linux</span></span>
+      <svg class="i arrow" style="width:16px;height:16px"><use href="#i-down"/></svg>
+    </a>
+    <p class="dl-meta" data-dlmeta>Free. Apple silicon and Intel, macOS 14.4 or later. Under 20 MB.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <a class="btn btn-secondary" href="#components"><svg class="i"><use href="#i-github"/></svg>View the source<svg class="i ext" style="width:14px;height:14px;color:var(--ink-3)"><use href="#i-ext"/></svg></a>
+      <a class="btn btn-ghost" href="#components">Other platforms</a>
+      <a class="chip" href="#components"><span class="dot"></span>What's new in 0.10.0<svg class="i"><use href="#i-right"/></svg></a>
+    </div>
+  </div>
+
+  <div class="comp-h"><h3>Cilica at work</h3><p>The hero demo. A marker sweeps what Cilica reads, steps shimmer in the panel, the diff card waits for you. Press Accept.</p></div>
+  <div class="stage">
+    <div class="amock" id="amock">
+      <div class="note" id="anote">
+        <span class="marker" id="marker"></span>
+        <h4>Pricing interview, Marco</h4>
+        <div class="meta-row"><span class="chip"><span class="mono">Tue 10 Nov, 19:01</span></span><span class="chip">31 min</span><span class="chip">2 people</span></div>
+        <h5 data-read>Summary</h5>
+        <p data-read>Marco walked through how his team buys tools. Seat-based pricing feels punishing for occasional users; he would rather pay for active members.</p>
+        <h5 data-read>Action items</h5>
+        <ul data-read><li id="editLine"><span class="hl" id="hlSpan">Write up the active-member model</span> (You, next Tuesday)</li><li>Ask finance whether monthly true-ups are possible (Priya)</li></ul>
+      </div>
+      <div class="panel">
+        <div class="bubble">Add worked examples to my action item</div>
+        <div class="step" id="step1"><svg class="i"><use href="#i-search"/></svg><span class="shimmer" id="step1t">Reading "Pricing interview, Marco"…</span></div>
+        <div class="diff" id="diff">
+          <div class="hd"><svg class="i" style="width:14px;height:14px"><use href="#i-pen"/></svg>Edit in Action items</div>
+          <div>Write up the active-member model <del>(You, next Tuesday)</del> <ins>with two worked examples (You, next Tuesday)</ins></div>
+          <div class="acts"><button class="btn btn-ghost" id="rejectBtn">Reject</button><button class="btn btn-primary" id="acceptBtn">Accept</button></div>
+        </div>
+        <div class="receipt" id="receipt"><b>What changed</b><div class="row"><span>Edited 1 line in Pricing interview, Marco</span><a href="#components">Undo</a></div></div>
+        <div class="composer" id="composer">Ask about your notes, or tell Cilica what to change<span style="flex:1"></span><span class="send"><svg class="i"><use href="#i-up"/></svg></span></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end"><button class="btn btn-ghost" id="replay" style="--h:30px;font-size:13px"><svg class="i" style="width:15px;height:15px"><use href="#i-undo"/></svg>Play again</button></div>
+  </div>
+
+  <div class="comp-h"><h3>Guard ladder</h3><p>Four rungs, from free to always-asks. The delete rung's confirm can't be switched off.</p></div>
+  <div class="stage">
+    <div class="ladder">
+      <div class="rung"><b><svg class="i"><use href="#i-eye"/></svg>Reads</b>Searches and reads any note, transcript or person.<span class="guard"><svg class="i"><use href="#i-check"/></svg>Runs freely</span></div>
+      <div class="rung"><b><svg class="i"><use href="#i-plus"/></svg>Adds</b>New notes, new lines, new action items.<span class="guard"><svg class="i"><use href="#i-undo"/></svg>Comes with Undo</span></div>
+      <div class="rung"><b><svg class="i"><use href="#i-pen"/></svg>Edits</b>Changes to what you wrote.<span class="guard"><svg class="i"><use href="#i-checkc"/></svg>Diff you accept by hunk</span></div>
+      <div class="rung"><b><svg class="i"><use href="#i-trash"/></svg>Deletes</b>Removing a note or a section.<span class="guard"><svg class="i"><use href="#i-lock"/></svg>Always asks first</span></div>
+    </div>
+  </div>
+
+  <div class="comp-h"><h3>Live transcript</h3><p>Words rise in on the smooth spring; the live line stays ink-3 until it settles. The unsure speaker asks a question. Press Yes.</p></div>
+  <div class="stage">
+    <div class="tx" id="tx" aria-live="off">
+      <div class="tl" style="--c:var(--sp1);--c-s:var(--sp1s)"><span class="av">YC</span><div><div class="who">You <span class="mono">13:48</span></div><div class="txt">So the plan is to cut setup to three steps and move verification after the first note.</div></div></div>
+      <div class="tl" style="--c:var(--sp2);--c-s:var(--sp2s)"><span class="av">PS</span><div><div class="who">Priya Shah <span class="mono">13:55</span></div><div class="txt">Step three is email verification. About a third of new accounts stop there.</div></div></div>
+      <div class="tl" id="p2" style="--c:var(--ink-4);--c-s:var(--fill-press)"><span class="av" id="p2av">P2</span><div><div class="who"><span id="p2name">Person 2</span> <span class="mono">14:31</span> <span class="ask" id="ask">Is this Sam? <button id="askYes">Yes</button><button id="askNo">No</button></span></div><div class="txt" id="liveTxt"></div></div></div>
+    </div>
+  </div>
+
+  <div class="comp-h"><h3>Saved person</h3><p>A voiceprint strip in the person's colour, with talk share and meeting count. Hover to see it breathe.</p></div>
+  <div class="stage">
+    <div class="person" style="--c:var(--sp7);--c-s:var(--sp7s)"><span class="av" style="width:40px;height:40px;font-size:13px">SL</span><div><div class="nm">Sam Lee</div><div class="st"><span class="mono">14</span> meetings · talks <span class="mono">38%</span> of the time</div></div><div class="vp" id="vp" aria-label="Voiceprint"></div></div>
+  </div>
+
+  <div class="comp-h"><h3>Proof chart</h3><p>A published number always shows what it was measured against, with the method in one line. Bars grow once when the chart scrolls into view.</p></div>
+  <div class="stage">
+    <div class="proof" id="proof">
+      <h4>Speech labelled with the right speaker</h4>
+      <p class="note">Four-person meetings, live labels. Range across test meetings.</p>
+      <svg viewBox="0 0 640 140" width="100%" role="img" aria-label="Cilica on your computer: 94 to 99 percent. Soniox live: 76 to 92 percent.">
+        <g>
+          <line x1="150" y1="24" x2="150" y2="112" stroke="var(--line)"/><line x1="267" y1="24" x2="267" y2="112" stroke="var(--line)"/><line x1="383" y1="24" x2="383" y2="112" stroke="var(--line)"/><line x1="500" y1="24" x2="500" y2="112" stroke="var(--line)"/><line x1="617" y1="24" x2="617" y2="112" stroke="var(--line)"/>
+          <text x="150" y="132" text-anchor="middle">60%</text><text x="267" y="132" text-anchor="middle">70%</text><text x="383" y="132" text-anchor="middle">80%</text><text x="500" y="132" text-anchor="middle">90%</text><text x="617" y="132" text-anchor="middle">100%</text>
+          <text class="lbl" x="0" y="52">Cilica, on device</text>
+          <rect class="bar" x="547" y="38" width="58" height="20" rx="6" fill="var(--accent)"/>
+          <text class="val" x="540" y="52" text-anchor="end">94–99%</text>
+          <text class="lbl" x="0" y="92">Soniox, live</text>
+          <rect class="bar" x="337" y="78" width="187" height="20" rx="6" fill="var(--ink-4)"/>
+          <text class="val" x="330" y="92" text-anchor="end">76–92%</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="comp-h"><h3>Provider picker</h3><p>A working control. The privacy line rewrites itself to match what you pick.</p></div>
+  <div class="stage">
+    <div class="prov">
+      <div class="row"><span class="lb">Model for Cilica</span>
+        <div class="seg" role="group" aria-label="Model" id="modelSeg"><span class="thumb"></span><button aria-pressed="true" data-p="Anthropic">Anthropic</button><button aria-pressed="false" data-p="OpenAI-compatible">OpenAI-compatible</button><button aria-pressed="false" data-p="Ollama">Ollama</button></div></div>
+      <div class="row"><span class="lb">Transcription</span>
+        <div class="seg" role="group" aria-label="Transcription" id="sttSeg"><span class="thumb"></span><button aria-pressed="true" data-p="local">On this computer</button><button aria-pressed="false" data-p="Deepgram">Deepgram</button><button aria-pressed="false" data-p="Soniox">Soniox</button><button aria-pressed="false" data-p="AssemblyAI">AssemblyAI</button></div></div>
+      <div class="privacy"><svg class="i" id="privIcon"><use href="#i-shield"/></svg><span id="privTxt">Audio stays on this computer. Notes go to Anthropic with your key, only when you ask Cilica something.</span></div>
+    </div>
+  </div>
+
+  <div class="comp-h"><h3>Pricing</h3><p>One plan today. The layout holds up to three side by side, so paid plans slot in later without a redesign.</p></div>
+  <div class="stage c">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:100%">
+      <div class="price">
+        <div><h3>Cilica</h3><p class="note" style="margin-top:4px">Everything in the app.</p></div>
+        <div class="amt">Free</div>
+        <ul>
+          <li><svg class="i"><use href="#i-check"/></svg>Notes, Cilica, meetings, saved people</li>
+          <li><svg class="i"><use href="#i-check"/></svg>Your own model and transcription keys</li>
+          <li><svg class="i"><use href="#i-check"/></svg>Mac, Windows and Linux</li>
+          <li><svg class="i"><use href="#i-check"/></svg>Open source under AGPL</li>
+        </ul>
+        <a class="btn btn-primary dl" href="#components" data-dl style="width:100%"><span class="os"><svg data-os="mac"><use href="#os-mac"/></svg><svg data-os="win" data-off><use href="#os-win"/></svg><svg data-os="linux" data-off><use href="#os-linux"/></svg></span>Download</a>
+      </div>
+      <div class="slot">Room for a second and third plan. Hidden until there is one; nothing on the page says "coming soon".</div>
+    </div>
+  </div>
+
+  <div class="comp-h"><h3>Small parts</h3><p>Chips, keys and the recorder pill, straight from the app.</p></div>
+  <div class="stage">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <span class="chip"><svg class="i" style="width:14px;height:14px"><use href="#i-users"/></svg>with Sam</span>
+      <span class="chip">last week</span><span class="chip">longer than 30 min</span><span class="chip">#pricing</span>
+      <span style="display:inline-flex;gap:4px;align-items:center;font-size:13px;color:var(--ink-3)"><span class="kbd">⌘</span><span class="kbd">K</span> search</span>
+      <span style="display:inline-flex;gap:4px;align-items:center;font-size:13px;color:var(--ink-3)"><span class="kbd">⌘</span><span class="kbd">Z</span> undo a whole turn</span>
+      <span class="glass-pill" style="position:static;transform:none"><span class="rec-dot"></span><span class="mono">04:12</span><span class="meter"><i></i><i></i><i></i><i></i><i></i></span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── Motion ───────── -->
+<section id="motion">
+  <h2>Motion</h2>
+  <p class="body">The app's four springs, unchanged. Everything that moves springs; colour and opacity use short tweens. Press each to feel it.</p>
+  <div class="springs" id="springs">
+    <div class="spr"><div><b>Snappy</b><small>0.2 s, bounce 0.15</small></div><div class="track" data-s="snappy"><span class="ball"></span></div><button class="btn btn-secondary">Play</button></div>
+    <div class="spr"><div><b>Smooth</b><small>0.3 s, bounce 0.1</small></div><div class="track" data-s="smooth"><span class="ball"></span></div><button class="btn btn-secondary">Play</button></div>
+    <div class="spr"><div><b>Bouncy</b><small>0.35 s, bounce 0.3</small></div><div class="track" data-s="bouncy"><span class="ball"></span></div><button class="btn btn-secondary">Play</button></div>
+    <div class="spr"><div><b>Gentle</b><small>0.45 s, no bounce</small></div><div class="track" data-s="gentle"><span class="ball"></span></div><button class="btn btn-secondary">Play</button></div>
+  </div>
+  <div class="moments tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Where</th><th>What moves</th><th>Spring</th></tr></thead>
+      <tbody>
+        <tr><td>Hover</td><td>Wash fades in 120 ms, icons play their one-shot, secondary buttons lift 1px</td><td>Snappy</td></tr>
+        <tr><td>Press</td><td>Scale to 0.97 (buttons), 0.92 (icon buttons)</td><td>Snappy release</td></tr>
+        <tr><td>Section arrives</td><td>Content is visible from the start; it settles 12px upward and sharpens from 0.6 opacity, once. No staggered cascades on text.</td><td>Gentle</td></tr>
+        <tr><td>Hero</td><td>Cilica's turn plays once when the hero is in view, then waits. Play again replays it.</td><td>Smooth, bouncy for the receipt</td></tr>
+        <tr><td>Ridgeline</td><td>Ridges drift at their own depths while you scroll; clouds drift slowly; the sun sinks across the page</td><td>Linear, tied to scroll</td></tr>
+        <tr><td>Meetings</td><td>The recorder pill widens as recording starts, then transcript words rise in</td><td>Bouncy, then smooth</td></tr>
+        <tr><td>Voices</td><td>"Is Person 2 Sam?" answered: the avatar takes Sam's colour and initials</td><td>Bouncy</td></tr>
+        <tr><td>Graph</td><td>A vault grows note by note, nodes landing and links drawing in</td><td>Bouncy per node, 24 ms apart, 6 at a time at most</td></tr>
+        <tr><td>Download</td><td>The OS icon and label swap when the system changes</td><td>Bouncy icon, smooth label</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="rules">
+    <div><svg class="i"><use href="#i-check"/></svg><span>Transform and opacity only, plus the pre-blurred glow layer fading in.</span></div>
+    <div><svg class="i"><use href="#i-check"/></svg><span>Nothing loops except the recording dot, the level meter and the working shimmer.</span></div>
+    <div><svg class="i"><use href="#i-check"/></svg><span>Reduce motion: travel becomes a 120 ms crossfade, the ridgeline stands still, demos show their finished state.</span></div>
+    <div><svg class="i"><use href="#i-check"/></svg><span>Demos run only while on screen, and pause in background tabs.</span></div>
+  </div>
+</section>
+
+<!-- ───────── Icons ───────── -->
+<section id="icons">
+  <h2>Icons</h2>
+  <p class="body">Lucide at 1.75px stroke, the app's set. No tiles or circles behind icons. Each plays its one-shot when its parent is hovered or focused. Hover these.</p>
+  <div class="icons">
+    <button class="ic"><span class="rot"><svg class="i"><use href="#i-plus"/></svg></span>Add · turns</button>
+    <button class="ic"><span class="nud"><svg class="i"><use href="#i-right"/></svg></span>Go · nudges</button>
+    <button class="ic"><span class="tip"><svg class="i"><use href="#i-trash"/></svg></span>Delete · tips</button>
+    <button class="ic"><span class="ring"><svg class="i"><use href="#i-bell"/></svg></span>Proposal · rings</button>
+    <button class="ic"><span class="wind"><svg class="i"><use href="#i-undo"/></svg></span>Undo · winds back</button>
+    <button class="ic"><span class="drop"><svg class="i"><use href="#i-down"/></svg></span>Download · drops</button>
+    <button class="ic"><span class="pop"><svg class="i"><use href="#i-mic"/></svg></span>Record · swells</button>
+    <button class="ic"><span class="pop"><svg class="i"><use href="#i-graph"/></svg></span>Graph · swells</button>
+  </div>
+</section>
+
+<!-- ───────── Copy ───────── -->
+<section id="copy">
+  <h2>Voice and copy</h2>
+  <p class="body">The app's voice: sentence case, second person, plain verbs, digits for numbers, no emoji. The assistant is "Cilica". "AI" appears only where a visitor needs the category word, in the page title and description for search. No labels above headings: each heading says the thing itself.</p>
+  <h3 style="margin-top:32px">Hero headline candidates</h3>
+  <div class="heads">
+    <div class="hcand"><div class="t">Notes that tidy themselves, with your say-so.</div><p>Cilica is a Markdown notes app for Mac, Windows and Linux. Its assistant can read and edit every note, and shows you each change before it sticks. Calls become notes too, transcribed on your computer, with no bot in the room.</p><div class="why">Leads with the assistant doing work in your notes, and puts trust in the same breath.</div></div>
+    <div class="hcand"><div class="t">Your notes, and someone careful to keep them.</div><p>Write in Markdown. Ask Cilica to sort, merge or fix anything, and approve every edit. Record a call without a bot and get notes back, made on your computer.</p><div class="why">Warmer. "Careful" carries the guardrails story.</div></div>
+    <div class="hcand"><div class="t">The notes app that edits itself, and asks first.</div><p>Cilica reads and changes every note you have, shows a diff before anything sticks, and turns your calls into notes without a bot joining.</p><div class="why">Most direct. "Asks first" will need the guard ladder right below it.</div></div>
+  </div>
+  <div class="dodont">
+    <div class="do"><b><svg class="i" style="width:14px;height:14px"><use href="#i-check"/></svg>Write</b><ul><li>Audio stays on this computer.</li><li>No bot joins the call.</li><li>Download for macOS</li><li>Cilica asks before it deletes anything.</li><li>Right for 94–99% of speech in our four-person tests.</li></ul></div>
+    <div class="dont"><b><svg class="i" style="width:14px;height:14px"><use href="#i-alert"/></svg>Don't write</b><ul><li>Your AI-powered second brain</li><li>Supercharge your productivity</li><li>Get started</li><li>Military-grade privacy</li><li>Loved by thousands</li></ul></div>
+  </div>
+  <h3 style="margin-top:32px">Section headlines, first pass</h3>
+  <div class="tbl-wrap"><table class="tbl">
+    <tbody>
+      <tr><td>Cilica</td><td>Ask for a change. Watch it happen. Keep what you like.</td></tr>
+      <tr><td>Guards</td><td>It asks before it deletes. Always.</td></tr>
+      <tr><td>Meetings</td><td>Every call becomes a note. Nothing joins the call.</td></tr>
+      <tr><td>Voices</td><td>It learns who's talking.</td></tr>
+      <tr><td>Providers</td><td>Bring your own model. Or run one on your computer.</td></tr>
+      <tr><td>Markdown</td><td>Plain files, open in Obsidian too.</td></tr>
+      <tr><td>Details</td><td>The small things.</td></tr>
+      <tr><td>Close</td><td>Free, open source, on your computer.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ───────── Next ───────── -->
+<section id="next">
+  <h2>Open decisions</h2>
+  <p class="body">Things to settle at this review, before I write the section outline and copy.</p>
+  <ul class="open">
+    <li><svg class="i"><use href="#i-help"/></svg><span><b>Page structure.</b> A, B or C, or a mix.</span></li>
+    <li><svg class="i"><use href="#i-help"/></svg><span><b>Hero headline.</b> One of the three, or a direction for another.</span></li>
+    <li><svg class="i"><use href="#i-help"/></svg><span><b>Import count.</b> The README says 45 apps; I counted about 39 provider ids, including "files". I'll check it against the code before the page names a number.</span></li>
+    <li><svg class="i"><use href="#i-help"/></svg><span><b>Swear jar.</b> It's in "The details" as one tile with safe-for-work wording ("Coins drop when someone swears"). Keep it, or leave it for the app to reveal?</span></li>
+    <li><svg class="i"><use href="#i-help"/></svg><span><b>Hosting and analytics.</b> Static Astro builds anywhere. I'd suggest Cloudflare Pages with Plausible or Umami (cookie-free, so no banner). Your call on both.</span></li>
+    <li><svg class="i"><use href="#i-help"/></svg><span><b>Download links.</b> Where installers live (GitHub Releases?) so the button can point at the latest one per system.</span></li>
+  </ul>
+</section>
+</main>
+</div>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const root = document.documentElement;
+  const css = (n) => getComputedStyle(root).getPropertyValue('--' + n).trim();
+
+  /* Segmented controls with a sliding thumb */
+  function seg(el, onPick) {
+    const thumb = el.querySelector('.thumb');
+    const btns = [...el.querySelectorAll('button')];
+    const place = () => { const b = btns.find(x => x.getAttribute('aria-pressed') === 'true'); if (!b) return; thumb.style.width = b.offsetWidth + 'px'; thumb.style.transform = `translateX(${b.offsetLeft}px)`; };
+    btns.forEach(b => b.addEventListener('click', () => { btns.forEach(x => x.setAttribute('aria-pressed', x === b)); place(); onPick && onPick(b); }));
+    requestAnimationFrame(place); addEventListener('resize', place);
+    document.fonts && document.fonts.ready.then(place);
+    return place;
+  }
+
+  /* Theme */
+  let redraw = [];
+  seg(document.getElementById('themeSeg'), (b) => {
+    const t = b.dataset.t;
+    if (t === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+    try { localStorage.setItem('cilica-theme', t); } catch (e) {}
+    paintSwatches(); redraw.forEach(f => f());
+  });
+  try { const t = localStorage.getItem('cilica-theme'); if (t) document.querySelector(`#themeSeg [data-t="${t}"]`)?.click(); } catch (e) {}
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { paintSwatches(); redraw.forEach(f => f()); });
+
+  /* Swatches */
+  function paintSwatches() {
+    document.querySelectorAll('[data-sw]').forEach(g => {
+      g.innerHTML = g.dataset.sw.split(',').map(n => `<div class="sw"><div class="c" style="background:var(--${n})"></div><b>${n}</b><span>${css(n)}</span></div>`).join('');
+    });
+  }
+  paintSwatches();
+
+  /* Dithered ridgeline (port of the app's SceneArt, simplified) */
+  const BAYER = [0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5].map(v => (v + .5) / 16);
+  const hex = (h) => { h = h.replace('#',''); const n = parseInt(h.slice(0,6),16); return [n>>16&255, n>>8&255, n&255]; };
+  const mix = (a,b,t) => a.map((v,i) => v + (b[i]-v)*t);
+  function ridge(canvas, opts) {
+    const ctx = canvas.getContext('2d'); const S = 3; let t0 = performance.now(); let raf = 0; let visible = true; let scrollT = 0;
+    function draw(now) {
+      const w = Math.max(1, Math.floor(canvas.clientWidth / S)), h = Math.max(1, Math.floor(canvas.clientHeight / S));
+      if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+      const dark = getComputedStyle(root).colorScheme.includes('dark') || css('bg-canvas').toLowerCase() === '#1b1917';
+      const sky = hex(css('sky')), tint = hex(css('amber')), ink = hex(css('ink')), canvasC = hex(css('bg-canvas'));
+      const ridges = ['r1','r2','r3','r4','r5','r6'].map(n => hex(css(n)));
+      const img = ctx.createImageData(w, h); const d = img.data;
+      const time = (now - t0) / 1000;
+      const sunY = h * (0.5 + scrollT * 0.25), sunX = w * 0.74, sunR = Math.max(6, h * 0.09);
+      const horizon = h * opts.horizon;
+      const ridgeY = (k, x) => { const base = horizon + (h - horizon) * (k / 6.2); const amp = h * (0.05 - k * 0.004); const ph = k * 1.7 + scrollT * (k + 1) * 0.6; return base + Math.sin(x / w * Math.PI * (1.6 + k * 0.35) + ph) * amp + Math.sin(x / w * Math.PI * 5.1 + k) * amp * 0.25; };
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const i = (y*w + x) * 4; const b = BAYER[(y & 3) * 4 + (x & 3)];
+        let c;
+        let layer = -1; for (let k = 5; k >= 0; k--) { if (y >= ridgeY(k, x)) { layer = k; break; } }
+        if (layer >= 0) { c = ridges[layer]; const shade = (y - ridgeY(layer, x)) / (h * 0.12); if (shade < 1 && layer < 5 && b < 0.35 * (1 - shade)) c = mix(c, ridges[Math.max(0, layer - 1)], 0.6); }
+        else {
+          const ty = y / horizon; let s = dark ? mix(sky, mix(canvasC, tint, .18), Math.pow(ty, 2.2)) : mix(sky, mix(sky, tint, .55), Math.pow(ty, 2.4));
+          if (b < ty * 0.25) s = mix(s, dark ? canvasC : tint, dark ? .2 : .25);
+          const dx = x - sunX, dy = y - sunY, dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < sunR) s = dark ? mix(s, ink, .85) : tint; else if (dist < sunR * 2.2 && b < (1 - (dist - sunR) / (sunR * 1.2)) * 0.5) s = mix(s, dark ? ink : tint, .35);
+          if (dark && b > .985 && ((x * 7 + y * 13) % 11 === 0) && ty < .7) s = mix(s, ink, .7 + .3 * Math.sin(time + x));
+          const cl = [[.12,.42,.1],[.5,.3,.07],[.86,.48,.09]];
+          for (const [cx0, cy, r] of cl) { const cx = ((cx0 + time * 0.004) % 1.15) * w; const ddx = (x - cx) / (r * w), ddy = (y - cy * horizon) / (r * w * 0.32); const q = ddx*ddx + ddy*ddy; if (q < 1 && b < (1 - q) * 0.9) s = mix(s, dark ? mix(canvasC, ink, .12) : [255,255,255], .55); }
+          c = s;
+        }
+        d[i] = c[0]; d[i+1] = c[1]; d[i+2] = c[2]; d[i+3] = 255;
+      }
+      ctx.putImageData(img, 0, 0);
+      if (!reduce && visible) raf = setTimeout(() => requestAnimationFrame(draw), 80);
+    }
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; clearTimeout(raf); if (visible) requestAnimationFrame(draw); });
+    io.observe(canvas);
+    if (opts.scroll) addEventListener('scroll', () => { const r = canvas.getBoundingClientRect(); scrollT = Math.min(1, Math.max(0, -r.top / r.height)); }, { passive: true });
+    redraw.push(() => requestAnimationFrame(draw));
+    addEventListener('resize', () => requestAnimationFrame(draw));
+    requestAnimationFrame(draw);
+  }
+  ridge(document.getElementById('ridge1'), { horizon: .62, scroll: true });
+  ridge(document.getElementById('ridge2'), { horizon: .55 });
+
+  /* Download button: OS detection */
+  const meta = {
+    mac: 'Free. Apple silicon and Intel, macOS 14.4 or later. Under 20 MB.',
+    win: 'Free. Windows 10 and 11, 64-bit. Under 20 MB.',
+    linux: 'Free. AppImage and .deb for x86-64. Under 20 MB.'
+  };
+  function setOS(os) {
+    document.querySelectorAll('[data-dl] [data-os]').forEach(el => { if (el.dataset.os === os) el.removeAttribute('data-off'); else el.setAttribute('data-off', ''); });
+    document.querySelectorAll('[data-dlmeta]').forEach(el => el.textContent = meta[os]);
+  }
+  const ua = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent;
+  const detected = /win/i.test(ua) ? 'win' : /linux|x11/i.test(ua) && !/android/i.test(navigator.userAgent) ? 'linux' : 'mac';
+  setOS(detected);
+  const osSeg = document.getElementById('osSeg');
+  osSeg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.os === detected));
+  seg(osSeg, b => setOS(b.dataset.os));
+
+  /* Nav hover wash */
+  const links = document.getElementById('navLinks'); const hov = links.querySelector('.hov');
+  links.querySelectorAll('a').forEach(a => a.addEventListener('mouseenter', () => { hov.style.width = a.offsetWidth + 'px'; hov.style.transform = `translateX(${a.offsetLeft}px)`; hov.style.opacity = 1; }));
+  links.addEventListener('mouseleave', () => hov.style.opacity = 0);
+
+  /* Other segments */
+  seg(document.getElementById('modelSeg'), privacy);
+  seg(document.getElementById('sttSeg'), privacy);
+  function privacy() {
+    const m = document.querySelector('#modelSeg [aria-pressed="true"]').dataset.p;
+    const s = document.querySelector('#sttSeg [aria-pressed="true"]').dataset.p;
+    const a = s === 'local' ? 'Audio stays on this computer.' : `Audio goes to ${s} with your key.`;
+    const n = m === 'Ollama' ? 'Cilica runs on your computer too. Nothing leaves it.' : `Notes go to ${m === 'Anthropic' ? 'Anthropic' : 'the provider you chose'} with your key, only when you ask Cilica something.`;
+    const t = document.getElementById('privTxt'), ic = document.getElementById('privIcon');
+    t.style.opacity = 0; ic.style.transform = 'scale(.8)';
+    setTimeout(() => { t.textContent = a + ' ' + n; t.style.opacity = 1; ic.style.transform = 'none'; }, 120);
+  }
+
+  /* Cilica at work */
+  const marker = document.getElementById('marker'), anote = document.getElementById('anote');
+  const diff = document.getElementById('diff'), receipt = document.getElementById('receipt'), composer = document.getElementById('composer');
+  const step1t = document.getElementById('step1t'), hl = document.getElementById('hlSpan');
+  let timers = [];
+  const later = (f, ms) => timers.push(setTimeout(f, ms));
+  function moveMarker(el) { const r = el.getBoundingClientRect(), p = anote.getBoundingClientRect(); marker.style.height = r.height + 'px'; marker.style.transform = `translateY(${r.top - p.top}px)`; marker.style.opacity = 1; }
+  function play() {
+    timers.forEach(clearTimeout); timers = [];
+    diff.classList.remove('gone'); diff.hidden = false; receipt.classList.remove('in'); hl.classList.remove('lit');
+    step1t.className = 'shimmer'; step1t.textContent = 'Reading "Pricing interview, Marco"…';
+    composer.classList.add('working');
+    if (reduce) { marker.style.opacity = 0; step1t.className = ''; step1t.textContent = 'Read "Pricing interview, Marco"'; composer.classList.remove('working'); return; }
+    const reads = [...anote.querySelectorAll('[data-read]')];
+    reads.forEach((el, i) => later(() => moveMarker(el), 300 + i * 520));
+    later(() => { moveMarker(document.getElementById('editLine')); step1t.className = ''; step1t.textContent = 'Read "Pricing interview, Marco"'; }, 300 + reads.length * 520);
+    later(() => { marker.style.opacity = 0; composer.classList.remove('working'); }, 600 + reads.length * 520);
+  }
+  function accept() {
+    diff.classList.add('gone');
+    setTimeout(() => { diff.hidden = true; receipt.classList.add('in'); }, 200);
+    hl.textContent = 'Write up the active-member model with two worked examples';
+    hl.classList.add('lit'); setTimeout(() => hl.classList.remove('lit'), 400);
+    composer.classList.remove('working'); marker.style.opacity = 0;
+  }
+  document.getElementById('acceptBtn').addEventListener('click', accept);
+  document.getElementById('rejectBtn').addEventListener('click', () => { diff.classList.add('gone'); setTimeout(() => { diff.hidden = true; }, 200); });
+  document.getElementById('replay').addEventListener('click', () => { hl.textContent = 'Write up the active-member model'; play(); });
+  new IntersectionObserver(([e], o) => { if (e.isIntersecting) { play(); o.disconnect(); } }, { threshold: .4 }).observe(document.getElementById('amock'));
+
+  /* Live transcript */
+  const live = 'Yes. Can we test that with five people before Thursday? I can book the sessions.'.split(' ');
+  const liveTxt = document.getElementById('liveTxt');
+  let wi = 0, txTimer;
+  function tick() {
+    if (wi >= live.length) { liveTxt.classList.remove('partial'); txTimer = setTimeout(() => { liveTxt.innerHTML = ''; wi = 0; tick(); }, 4000); return; }
+    liveTxt.classList.add('partial');
+    const s = document.createElement('span'); s.className = 'w'; s.textContent = live[wi++] + ' '; liveTxt.appendChild(s);
+    txTimer = setTimeout(tick, 140 + Math.random() * 160);
+  }
+  if (reduce) { liveTxt.textContent = live.join(' '); }
+  else new IntersectionObserver(([e]) => { clearTimeout(txTimer); if (e.isIntersecting) tick(); }).observe(document.getElementById('tx'));
+  const p2 = document.getElementById('p2');
+  document.getElementById('askYes').addEventListener('click', () => {
+    p2.style.setProperty('--c', 'var(--sp7)'); p2.style.setProperty('--c-s', 'var(--sp7s)');
+    const av = document.getElementById('p2av'); av.textContent = 'SL'; av.style.transform = 'scale(1.12)'; setTimeout(() => av.style.transform = '', 160);
+    document.getElementById('p2name').textContent = 'Sam Lee'; document.getElementById('ask').remove();
+  });
+  document.getElementById('askNo').addEventListener('click', () => { document.getElementById('ask').remove(); });
+
+  /* Voiceprint */
+  const vp = document.getElementById('vp'); let seed = 7;
+  const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  for (let i = 0; i < 64; i++) { const h = 20 + Math.abs(Math.sin(i * .37) * 50 + Math.sin(i * 1.3) * 20) + rnd() * 20; const b = document.createElement('i'); b.style.height = Math.min(100, h) + '%'; b.style.transitionDelay = (i % 12) * 12 + 'ms'; vp.appendChild(b); }
+
+  /* Proof chart */
+  new IntersectionObserver(([e], o) => { if (e.isIntersecting) { document.getElementById('proof').classList.add('in'); o.disconnect(); } }, { threshold: .5 }).observe(document.getElementById('proof'));
+
+  /* Spring demos */
+  document.querySelectorAll('.spr').forEach(r => {
+    const tr = r.querySelector('.track'), ball = tr.querySelector('.ball'), s = tr.dataset.s;
+    ball.style.transition = `transform var(--${s}-d) var(--spring-${s})`;
+    r.querySelector('button').addEventListener('click', () => { tr.style.setProperty('--tw', tr.clientWidth + 'px'); tr.classList.toggle('go'); });
+  });
+
+  /* Contents rail */
+  const tocLinks = [...document.querySelectorAll('.toc a')];
+  const secs = tocLinks.map(a => document.querySelector(a.getAttribute('href')));
+  const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-40% 0px -55% 0px' });
+  secs.forEach(s => s && spy.observe(s));
+})();
+</script>
