@@ -184,8 +184,15 @@ const FORMAT = [
     const logoAt = (t: EventTarget | null) => (t instanceof Element ? t.closest<HTMLElement>(".imp-logo") : null);
 
     // Shown only while the pointer is on an app (or one has keyboard focus); gone as soon as it leaves.
-    well.addEventListener("pointerover", (e) => { const b = logoAt(e.target); if (b) show(b); });
-    well.addEventListener("pointerout", (e) => { if (logoAt(e.target) && !logoAt(e.relatedTarget)) hide(); });
+    well.addEventListener("pointerover", (e) => { const b = logoAt(e.target); if (b && e.pointerType === "mouse") show(b); });
+    well.addEventListener("pointerout", (e) => { if (e.pointerType === "mouse" && logoAt(e.target) && !logoAt(e.relatedTarget)) hide(); });
+    // On touch a tap shows the card and it stays; tapping the same app again, or anywhere else, closes it.
+    well.addEventListener("pointerup", (e) => {
+      if (e.pointerType === "mouse") return;
+      const b = logoAt(e.target);
+      if (b) (current === b ? close() : show(b));
+    });
+    document.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" && !pop.hidden && !logoAt(e.target)) close(); });
     well.addEventListener("focusin", (e) => { const b = logoAt(e.target); if (b?.matches(":focus-visible")) show(b); });
     well.addEventListener("focusout", (e) => { if (!logoAt(e.relatedTarget)) hide(); });
     well.addEventListener("keydown", (e) => { if (e.key === "Escape" && !pop.hidden) close(); });
