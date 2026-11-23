@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-21T00:00:00Z",
+  "title": "Design System: Cilica (cilica.si)",
+  "extensions": {
+    "colorMeta": {
+      "sky": { "role": "neutral", "displayName": "Icon Sky", "dark": "#131110", "tonalRamp": ["#fffdfa", "#f7efe2"] },
+      "ridge-1": { "role": "neutral", "displayName": "Ridgeline ramp", "tonalRamp": ["#1c1a18", "#5a524a", "#8f8275", "#b5a695", "#d9c9b4", "#efe5d6", "#f7efe2", "#fffdfa"], "darkRamp": ["#0f0e0d", "#171513", "#1d1a18", "#221f1c", "#282421", "#2e2a26", "#231a14", "#131110"] },
+      "band-1": { "role": "neutral", "displayName": "Section grounds", "tonalRamp": ["#1c1a18", "#332d28", "#e0d5c7", "#ebe1d4", "#f4ede3"], "darkRamp": ["#0c0b0a", "#121110", "#181614", "#1d1a18", "#221f1c"] },
+      "graphite-accent": { "role": "primary", "displayName": "Graphite", "dark": "#dad7d5" },
+      "cilica-glow": { "role": "secondary", "displayName": "Cilica Blue (working only)", "dark": "#3b7bff" },
+      "glow-soft": { "role": "secondary", "displayName": "Glow Soft", "dark": "#1b2747" },
+      "glow-text": { "role": "secondary", "displayName": "Glow Text", "dark": "#8fb2ff" },
+      "rec": { "role": "tertiary", "displayName": "Recording Red (recording only)", "dark": "#f85452" },
+      "home-accent": { "role": "tertiary", "displayName": "Home Amber", "dark": "#f79c36" },
+      "band-2-ink-2": { "role": "neutral", "displayName": "Band 2 secondary ink", "dark": "#b7b4b0" },
+      "band-3-ink-2": { "role": "neutral", "displayName": "Band 3 secondary ink", "dark": "#b7b4b0" }
+    },
+    "typographyMeta": {
+      "hero": { "displayName": "Hero", "purpose": "The single H1, max 13ch." },
+      "headline": { "displayName": "Section headline", "purpose": "One per section head." },
+      "lead": { "displayName": "Lead", "purpose": "Paragraph under a headline, 54-58ch." },
+      "mono": { "displayName": "Geist Mono", "purpose": "Versions, sizes, timestamps, Markdown source, jottings." }
+    },
+    "shadows": [
+      { "name": "shadow-xs", "value": "0 1px 1px rgba(28,25,22,0.06)", "purpose": "Controls and cards at rest on a band." },
+      { "name": "shadow-sm", "value": "0 1px 2px rgba(28,25,22,0.06), 0 2px 6px rgba(28,25,22,0.05)", "purpose": "Primary button, thumbs, diff card, person card." },
+      { "name": "shadow-float", "value": "0 2px 6px rgba(28,25,22,0.06), 0 12px 28px -6px rgba(28,25,22,0.16)", "purpose": "Hover lift, glass controls, island." },
+      { "name": "shadow-overlay", "value": "0 4px 12px rgba(28,25,22,0.08), 0 28px 64px -12px rgba(28,25,22,0.28)", "purpose": "App-window sheet and dialog-like showcase cards." },
+      { "name": "glass-edge", "value": "inset 0 0 0 0.5px var(--glass-edge), var(--shadow-float)", "purpose": "Glass edge; the only inset allowed is the 0.5px ring." }
+    ],
+    "motion": [
+      { "name": "spring-snappy", "value": "spring visualDuration 0.2 bounce 0.15 / CSS linear() 330ms", "purpose": "Presses, hovers, nav wash, icon one-shots." },
+      { "name": "spring-smooth", "value": "spring visualDuration 0.3 bounce 0.1 / 380ms", "purpose": "Label swaps, words rising, read marker." },
+      { "name": "spring-bouncy", "value": "spring visualDuration 0.35 bounce 0.3 / 720ms", "purpose": "Capsule morph, island, toasts, OS logo swap. Kept on purpose: app preset." },
+      { "name": "spring-gentle", "value": "spring visualDuration 0.45 bounce 0 / 650ms", "purpose": "Translate-only reveal (12px), proof bars." },
+      { "name": "ease-out", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Colour and opacity transitions (80/120/180/280ms)." },
+      { "name": "ridge-parallax", "value": "once per frame on scroll, visible only", "purpose": "Ridges and the sun shift with scroll; static under reduced motion." }
+    ],
+    "breakpoints": [
+      { "name": "mosaic-1col", "value": "560px" },
+      { "name": "stack", "value": "760px" },
+      { "name": "grids-1col", "value": "860-960px" },
+      { "name": "nav-links", "value": "900px" },
+      { "name": "app-sidebar", "value": "1080px" }
+    ]
+  },
+  "components": [
+    { "name": "Primary Button", "kind": "button", "refersTo": "button-primary", "description": "Graphite download action.",
+      "html": "<button class=\"ds-btn-primary\">Download for macOS</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:0;border-radius:12px;background:var(--accent,#302d2b);color:var(--on-accent,#fdfbfa);font:560 15px/1 'Inter Variable',Inter,system-ui,sans-serif;letter-spacing:-0.009em;box-shadow:0 1px 2px rgba(28,25,22,.06),0 2px 6px rgba(28,25,22,.05);transition:transform 330ms,background-color 120ms}.ds-btn-primary:hover{background:var(--accent-hover,#262321)}.ds-btn-primary:active{transform:scale(.97)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px #fdfbfa,0 0 0 4px #383532}" },
+    { "name": "Secondary Button", "kind": "button", "refersTo": "button-secondary", "description": "Raised, hairline ring; View the source.",
+      "html": "<button class=\"ds-btn-secondary\">View the source</button>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;height:40px;padding:0 16px;border:0;border-radius:12px;background:var(--bg-raised,#fff);color:var(--ink,#1c1a18);font:560 15px/1 'Inter Variable',Inter,system-ui,sans-serif;box-shadow:inset 0 0 0 .5px #1c1a1829,0 1px 1px rgba(28,25,22,.06);transition:transform 330ms,box-shadow 120ms}.ds-btn-secondary:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 .5px #1c1a1829,0 1px 2px rgba(28,25,22,.06),0 2px 6px rgba(28,25,22,.05)}.ds-btn-secondary:active{transform:scale(.97)}" },
+    { "name": "Chip", "kind": "chip", "refersTo": "chip", "description": "Pill chip; filter variant is Cilica-applied.",
+      "html": "<span class=\"ds-chip\">Zoom</span> <span class=\"ds-chip ds-chip-filter\">Last week</span>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:#1c1a180d;color:#585551;font:550 12px/1 'Inter Variable',Inter,system-ui,sans-serif}.ds-chip:hover{background:#1c1a1817;color:#1c1a18}.ds-chip-filter{background:#e5ecff;color:#1d4fd8}" },
+    { "name": "Element tile Si", "kind": "custom", "refersTo": "element-tile", "description": "Brand mark.",
+      "html": "<span class=\"ds-tile\"><i>14</i><b>Si</b></span>",
+      "css": ".ds-tile{display:inline-grid;grid-template-rows:auto 1fr;width:32px;height:32px;padding:3.2px;border-radius:7.7px;background:#302d2b;color:#fdfbfa;font-family:'Inter Variable',Inter,system-ui,sans-serif;line-height:1}.ds-tile i{font-style:normal;font-size:5.8px;font-weight:600;opacity:.7}.ds-tile b{align-self:center;justify-self:center;font-size:14.7px;font-weight:680;letter-spacing:-.04em;margin-top:-3.8px}" },
+    { "name": "Nav (scrolled)", "kind": "nav", "description": "Glass-strong floating bar after 12px scroll.",
+      "html": "<nav class=\"ds-nav\"><b>Cilica</b><a>Cilica</a><a>Meetings</a><a>Notes</a><a>Privacy</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:2px;height:54px;padding:0 8px 0 12px;border-radius:16px;background:#ffffffc7;backdrop-filter:blur(32px) saturate(180%);box-shadow:inset 0 0 0 .5px #1c1a181a,0 2px 6px rgba(28,25,22,.06),0 12px 28px -6px rgba(28,25,22,.16);font-family:'Inter Variable',Inter,system-ui,sans-serif}.ds-nav b{font-weight:640;margin-right:10px}.ds-nav a{padding:7px 11px;border-radius:8px;font-size:14px;color:#585551;transition:color 120ms,background-color 120ms}.ds-nav a:hover{color:#1c1a18;background:#1c1a180d}" },
+    { "name": "Diff hunk", "kind": "card", "description": "Cilica's proposed edit, accepted hunk by hunk.",
+      "html": "<div class=\"ds-hunk\"><p>Ship <del>Friday</del> <ins>Thursday</ins>.</p></div>",
+      "css": ".ds-hunk{padding:8px;border-radius:10px;background:#f5f3f1;font:400 13.5px/20px 'Inter Variable',Inter,system-ui,sans-serif;color:#1c1a18}.ds-hunk del{color:#c22826;background:#ffeae8;border-radius:3px;padding:0 2px}.ds-hunk ins{text-decoration:none;background:#eae7e5;border-radius:3px;padding:0 2px}" },
+    { "name": "Recorder capsule", "kind": "custom", "description": "Glass pill; red only while recording.",
+      "html": "<div class=\"ds-capsule\"><span class=\"ds-dot\"></span>00:42<button aria-label=\"Stop\"></button></div>",
+      "css": ".ds-capsule{display:inline-flex;align-items:center;gap:12px;height:44px;padding:0 6px 0 16px;border-radius:999px;background:#ffffff94;backdrop-filter:blur(20px) saturate(180%);box-shadow:inset 0 0 0 .5px #1c1a181a,0 2px 6px rgba(28,25,22,.06),0 12px 28px -6px rgba(28,25,22,.16);font:400 13px 'Geist Mono Variable',monospace}.ds-dot{width:8px;height:8px;border-radius:50%;background:#e23532}.ds-capsule button{width:32px;height:32px;border:0;border-radius:50%;background:#ffe7e4;transition:transform 330ms}.ds-capsule button:active{transform:scale(.92)}" },
+    { "name": "Price card", "kind": "card", "refersTo": "price-card", "description": "Free plan on the ink ground.",
+      "html": "<div class=\"ds-price\"><h3>Free</h3><div class=\"ds-amt\">€0</div></div>",
+      "css": ".ds-price{padding:24px;border-radius:22px;background:#242220;color:#ebe9e7;box-shadow:0 4px 12px rgba(0,0,0,.5),0 32px 72px -12px rgba(0,0,0,.75),0 0 0 .5px rgba(255,255,255,.1);font-family:'Inter Variable',Inter,system-ui,sans-serif}.ds-price h3{margin:0;font-size:18px;font-weight:620}.ds-amt{font-size:40px;line-height:1;font-weight:660;letter-spacing:-.035em}" }
+  ],
+  "narrative": {
+    "northStar": "The Ridgeline Descent",
+    "overview": "The site is a child of the Cilica app's design system, which stays authoritative; tokens.css is copied verbatim and never edited. The site adds a place: the page walks down the Ridgeline icon from a dithered dawn sky to the ink foreground, sections grounded on the icon's ridges, seams drawn as dithered canvas ridgelines. Claims are carried by opaque app-sheet mocks that play once in view.",
+    "keyCharacteristics": [
+      "Parent system: Cilica app tokens, springs, glass and icon rules, inherited unchanged.",
+      "Light by default in the app icon's colours: warm-white grounds, cream and taupe ridges, the ink base for the close.",
+      "Dithered canvas ridgelines are the site's only art.",
+      "Colour means what it means in the app: blue is Cilica working, red is recording, amber is Home and the sun, speaker colours are people.",
+      "Mocks are opaque sheets. Glass is only for things that float.",
+      "Motion uses the app springs. Demos play once in view. Reduced motion and reduced transparency are honoured everywhere."
+    ],
+    "rules": [
+      { "name": "The Meaning Rule", "body": "A signal colour appears only where its app meaning is true: blue means Cilica is working, red means recording, speaker colours mean a person. If it is not that thing, it is graphite or ink.", "section": "colors" },
+      { "name": "The Ridges Are Ground Rule", "body": "Ridge colours paint art and grounds, never buttons, chips or text.", "section": "colors" },
+      { "name": "The Sentence Case Rule", "body": "Every heading, label and button is in sentence case. Nothing is uppercase, and no heading has a small label above it.", "section": "typography" },
+      { "name": "The One Family Rule", "body": "There is no serif and no second display face on the site. Newsreader belongs to the app's editor and is not used here.", "section": "typography" },
+      { "name": "The Glass Floats Rule", "body": "Glass is only for floating controls: the nav once you scroll, the recorder capsule, toasts, the command palette and the thesaurus popover. Mocks and cards are opaque. Under reduced transparency, glass becomes bg-raised with no blur.", "section": "elevation" },
+      { "name": "The No Inner Light Rule", "body": "No inset 0 1px 0 highlight and no inner glow on any surface. Cilica's blue glow is outside the element and only appears while Cilica works.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do treat the Cilica app design system as the parent. Take every app token from tokens.css (copied, never edited), and add site tokens only in site.css.",
+      "Do put each section on its band ground in descent order, and set the band's secondary-ink overrides on bands 2 and 3.",
+      "Do keep the site light by default; dark only from the footer toggle. Warm whites are the common grounds; cream and taupe for art, ink for the close.",
+      "Do show behaviour with an opaque app-sheet mock that plays once in view and lands on its end state under reduced motion.",
+      "Do use the app springs for anything that moves, and translate-only reveals.",
+      "Do write in sentence case with plain verbs and second person. Call the assistant \"Cilica\". State facts concretely.",
+      "Do keep every shipped raster traceable: og.png and apple-touch-icon.png from scripts/og.ts (SVG in code, Inter OFL); public/logos/* are third-party import-catalogue logos used nominatively; no other rasters ship."
+    ],
+    "donts": [
+      "Don't use Cilica blue for anything that isn't Cilica working, red for anything that isn't recording, or speaker colours for anything that isn't a person.",
+      "Don't put glass on a mock, card or section. Glass is for floating controls only.",
+      "Don't add inner light (inset 0 1px 0 …) or inner glows to any surface.",
+      "Don't fade content from zero opacity on reveal, or loop a demo forever.",
+      "Don't use ridge colours on controls or text, or add art other than the dithered ridgelines.",
+      "Don't use emoji, \"Success!\", uppercase labels or small labels above headings. Don't call the assistant \"AI\" outside category or SEO needs.",
+      "Don't edit src/styles/tokens.css. Change the app's tokens.json and copy it over.",
+      "Don't treat the bouncy-spring overshoot or the shimmer label as defects: both are app presets kept on purpose."
+    ]
+  }
+}
