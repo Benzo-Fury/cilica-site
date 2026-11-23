@@ -1,0 +1,41 @@
+---
+import Logo from "./Logo.astro";
+import DownloadButton from "../islands/DownloadButton.tsx";
+import { GitHubLogo } from "../islands/os.tsx";
+import { repoUrl } from "../lib/release";
+import type { Downloads } from "../islands/DownloadButton.tsx";
+interface Props { downloads: Downloads }
+const { downloads } = Astro.props;
+// Only the top of the page: what it does, the meeting notes, and what it costs.
+const links = [
+  { href: "#cilica", label: "Features" },
+  { href: "#meetings", label: "Meetings" },
+  { href: "#download", label: "Pricing" },
+];
+---
+<header class="nav" data-nav>
+  <div class="nav-in glass-strong sq">
+    <a class="nav-brand" href="#top" aria-label="Cilica, back to top">
+      <Logo size={28} />
+      <span>Cilica</span>
+    </a>
+    <nav class="nav-links" aria-label="Sections" data-navlinks>
+      <span class="nav-wash" aria-hidden="true"></span>
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    <span class="nav-space"></span>
+    <a class="btn btn-ghost btn-sm nav-gh" href={repoUrl}><GitHubLogo width={16} height={16} />GitHub</a>
+    <DownloadButton client:load downloads={downloads} size="sm" short />
+  </div>
+</header>
+<script>
+  const nav = document.querySelector<HTMLElement>("[data-nav]")!;
+  const onScroll = () => nav.classList.toggle("scrolled", scrollY > 12);
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  const links = document.querySelector<HTMLElement>("[data-navlinks]")!;
+  const wash = links.querySelector<HTMLElement>(".nav-wash")!;
+  links.querySelectorAll("a").forEach((a) => a.addEventListener("pointerenter", () => {
+    wash.style.transform = `translateX(${a.offsetLeft}px) scaleX(${a.offsetWidth / 100})`; wash.style.opacity = "1";
+  }));
+  links.addEventListener("pointerleave", () => { wash.style.opacity = "0"; });
+</script>

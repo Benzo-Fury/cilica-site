@@ -1,0 +1,12 @@
+---
+/** A Lucide icon (lucide-static), drawn inline at the app's 1.75px stroke. */
+import * as icons from "lucide-static";
+interface Props { name: keyof typeof icons; class?: string; label?: string }
+const { name, class: cls = "", label } = Astro.props;
+const raw = (icons[name] as string) ?? "";
+const svg = raw
+  .replace(/class="lucide([^"]*)"/, `class="i${cls ? " " + cls : ""}"`)
+  .replace(/\swidth="24"\s+height="24"/, "")
+  .replace("<svg", label ? `<svg role="img" aria-label="${label}"` : `<svg aria-hidden="true" focusable="false"`);
+---
+<Fragment set:html={svg} />

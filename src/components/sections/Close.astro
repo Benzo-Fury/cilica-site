@@ -1,0 +1,66 @@
+---
+import Logo from "../Logo.astro";
+import Icon from "../Icon.astro";
+import DownloadButton, { type Downloads } from "../../islands/DownloadButton.tsx";
+import ThemeToggle from "../../islands/ThemeToggle.tsx";
+import { MacLogo, WindowsLogo, LinuxLogo, GitHubLogo } from "../../islands/os.tsx";
+import { mb, repoUrl, releasesUrl, type Release } from "../../lib/release";
+interface Props { release: Release; downloads: Downloads }
+const { release, downloads } = Astro.props;
+const analytics = Boolean(import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN);
+const others = [
+  release.mac && { Logo: MacLogo, label: "macOS, Apple silicon", file: ".dmg", a: release.mac },
+  release.win && { Logo: WindowsLogo, label: "Windows 10 and 11", file: "Setup .exe", a: release.win, early: true },
+  release.appImage && { Logo: LinuxLogo, label: "Linux, x86-64", file: "AppImage", a: release.appImage, early: true },
+  release.deb && { Logo: LinuxLogo, label: "Debian and Ubuntu", file: ".deb", a: release.deb, early: true },
+  release.rpm && { Logo: LinuxLogo, label: "Fedora and openSUSE", file: ".rpm", a: release.rpm, early: true },
+].filter(Boolean) as { Logo: typeof MacLogo; label: string; file: string; a: { url: string; size: number }; early?: boolean }[];
+---
+<section class="band band-6 close" id="download" aria-labelledby="close-h">
+  <canvas class="seam" data-ridge-edge="r5" data-seed="4" aria-hidden="true"></canvas>
+  <div class="wrap" data-theme="dark">
+    <div class="sec-head plans-head" data-reveal>
+      <h2 class="t-h2" id="close-h">Free for everyone.</h2>
+      <p class="t-lead">Download it and start writing. You only pay a model or transcription provider if you choose one.</p>
+    </div>
+    <div class="plans">
+      <article class="plan sq" data-reveal aria-labelledby="plan-free">
+        <div class="plan-hd">
+          <Logo size={40} />
+          <div><h3 id="plan-free">Free</h3><p>The whole app, open source under the AGPL.</p></div>
+        </div>
+        <div class="plan-cta"><DownloadButton client:visible downloads={downloads} meta /></div>
+        <dl class="plan-facts">
+          <div><dt>Opens in</dt><dd class="mono">&lt; 1 s</dd></div>
+          <div><dt>Memory at rest</dt><dd class="mono">&lt; 150 MB</dd></div>
+        </dl>
+        <p class="plan-later"><Icon name="Info" class="i-xs" /><span>A paid plan with extra features may come later. It won't take anything away from Free.</span></p>
+      </article>
+      <div class="plan-dl" data-reveal>
+        <span class="t-cap">All downloads for <span class="mono">{release.version}</span></span>
+        {others.map((o) => (
+          <a class="dl-row" href={o.a.url}>
+            <o.Logo width={16} height={16} />
+            <span class="dl-row-l">{o.label}{o.early && <span class="dl-early">Early build</span>}</span>
+            <span class="dl-row-f mono">{o.file} · {mb(o.a.size)}</span>
+            <Icon name="ArrowDown" class="i-xs drop" />
+          </a>
+        ))}
+        <a class="dl-row dl-row-all" href={releasesUrl}><span class="dl-row-l">Every release and its notes</span><Icon name="ArrowUpRight" class="i-xs lift" /></a>
+      </div>
+    </div>
+  </div>
+  <footer class="foot" data-theme="dark">
+    <div class="wrap foot-in">
+      <a class="nav-brand" href="#top"><Logo size={24} />Cilica</a>
+      <nav class="foot-links" aria-label="Footer">
+        <a href={repoUrl}><GitHubLogo width={14} height={14} />GitHub</a>
+        <a href={releasesUrl}>Changelog</a>
+        <a href={`${repoUrl}/blob/main/LICENSE`}>Licence</a>
+        <a href={`${repoUrl}/issues`}>Report a problem</a>
+      </nav>
+      <ThemeToggle client:idle />
+      <p class="foot-note">{analytics ? "This site sets no cookies and counts visits without identifying anyone." : "This site sets no cookies and doesn't track you."} © 2026 Cilica.</p>
+    </div>
+  </footer>
+</section>

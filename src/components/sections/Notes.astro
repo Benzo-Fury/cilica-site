@@ -1,0 +1,13 @@
+---
+import NoteGraph from "../../islands/NoteGraph.tsx";
+---
+<section class="band band-4" id="notes" aria-labelledby="notes-h">
+  <canvas class="seam" data-ridge-edge="r4" data-seed="2" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <h2 class="t-h2" id="notes-h">Write in Markdown. Link as you go.</h2>
+      <p class="t-lead">Headings, lists, checkboxes, links and tags, formatted as you write. Link one note to another and it joins your map. Click anywhere in this note to edit it.</p>
+    </div>
+    <div data-reveal><NoteGraph client:visible /></div>
+  </div>
+</section>

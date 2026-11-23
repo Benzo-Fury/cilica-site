@@ -1,0 +1,40 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Hero from "../components/sections/Hero.astro";
+import Sidebar from "../components/sections/Sidebar.astro";
+import Meetings from "../components/sections/Meetings.astro";
+import Notes from "../components/sections/Notes.astro";
+import Details from "../components/sections/Details.astro";
+import Close from "../components/sections/Close.astro";
+import { getRelease, mb, releasesUrl } from "../lib/release";
+import type { Downloads } from "../islands/DownloadButton.tsx";
+
+const release = await getRelease();
+const downloads: Downloads = {
+  mac: release.mac && { url: release.mac.url, size: mb(release.mac.size) },
+  win: release.win && { url: release.win.url, size: mb(release.win.size) },
+  linux: release.appImage && { url: release.appImage.url, size: mb(release.appImage.size) },
+  fallback: releasesUrl + "/latest",
+};
+---
+<Base
+  title="Cilica: private AI notes and meeting notes, on your computer"
+  description="A Markdown notes app with an assistant that can find, sort and rewrite any note, and meeting notes without a bot, transcribed on your computer. Free and open source for Mac, Windows and Linux."
+>
+  <Nav downloads={downloads} />
+  <main>
+    <Hero release={release} downloads={downloads} />
+    <Sidebar />
+    <Meetings />
+    <Notes />
+    <Details />
+    <Close release={release} downloads={downloads} />
+  </main>
+</Base>
+<script>
+  import { startRidgelines } from "../scripts/ridgeline";
+  import { startReveal } from "../scripts/reveal";
+  startRidgelines();
+  startReveal();
+</script>

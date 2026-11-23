@@ -1,0 +1,122 @@
+/* Shared UI pieces, adapted from the app's components/bundle.css: buttons, chips, keys, glass, the app window. */
+
+.i { width: 18px; height: 18px; flex: none; display: block; stroke-width: 1.75; }
+.i-sm { width: 16px; height: 16px; }
+.i-xs { width: 14px; height: 14px; }
+
+/* ── Glass (floating controls only) ── */
+.glass {
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(180%);
+  backdrop-filter: blur(var(--blur-glass)) saturate(180%);
+  box-shadow: inset 0 0 0 0.5px var(--glass-edge), var(--shadow-float);
+}
+.glass-strong {
+  background: var(--glass-fill-strong);
+  -webkit-backdrop-filter: blur(var(--blur-glass-strong)) saturate(180%);
+  backdrop-filter: blur(var(--blur-glass-strong)) saturate(180%);
+  box-shadow: inset 0 0 0 0.5px var(--glass-edge), var(--shadow-float);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass-strong { background: var(--bg-raised); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* ── Buttons ── */
+.btn {
+  --h: 40px;
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: var(--h); padding: 0 16px; border: 0; border-radius: calc(12px * var(--sq));
+  font-size: 15px; font-weight: 560; letter-spacing: -0.009em; line-height: 1; text-decoration: none; white-space: nowrap;
+  transition: transform var(--spring-snappy-dur) var(--spring-snappy), background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.btn:active { transform: scale(0.97); transition-duration: var(--dur-instant); }
+.btn-primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow-sm); }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary { background: var(--bg-raised); color: var(--ink); box-shadow: inset 0 0 0 0.5px var(--line-strong), var(--shadow-xs); }
+.btn-secondary:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 0.5px var(--line-strong), var(--shadow-sm); }
+.btn-secondary:active { transform: scale(0.97); }
+.btn-ghost { background: transparent; color: var(--ink-2); }
+.btn-ghost:hover { background: var(--fill-hover); color: var(--ink); }
+.btn-lg { --h: 48px; padding: 0 20px 0 16px; border-radius: calc(14px * var(--sq)); font-size: 16px; }
+.btn-sm { --h: 30px; padding: 0 11px; border-radius: calc(9px * var(--sq)); font-size: 13px; gap: 6px; }
+.btn-xs { --h: 26px; padding: 0 9px; border-radius: calc(8px * var(--sq)); font-size: 12px; gap: 5px; }
+.btn .nudge { transition: transform var(--spring-snappy-dur) var(--spring-snappy); }
+.btn:hover .nudge, a:hover > .nudge { transform: translateX(3px); }
+.btn:hover .lift { transform: translate(2px, -2px); }
+.btn .lift { transition: transform var(--spring-snappy-dur) var(--spring-snappy); color: var(--ink-3); }
+.btn:hover .drop { transform: translateY(2px); }
+.btn .drop { transition: transform var(--spring-snappy-dur) var(--spring-snappy); }
+
+/* ── Chips and keys ── */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 550; line-height: 1; background: var(--fill-hover); color: var(--ink-2); text-decoration: none; white-space: nowrap;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+a.chip:hover { background: var(--fill-press); color: var(--ink); }
+.chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+.kbd {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 6px;
+  font-family: var(--font-sans); font-size: 12px; font-weight: 560; line-height: 1; color: var(--ink-2);
+  background: var(--bg-raised); box-shadow: inset 0 0 0 0.5px var(--line-strong), 0 1px 0 var(--line);
+}
+/* ── App icon (Ridgeline) ── */
+.logo { display: block; flex: none; }
+
+/* ── App window (the opaque sheet) ── */
+.win {
+  position: relative; background: var(--bg-canvas); color: var(--ink); border-radius: calc(var(--radius-window) * var(--sq));
+  box-shadow: var(--shadow-overlay); overflow: hidden; isolation: isolate; font-size: 14px; line-height: 20px;
+}
+.win-bar { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border-bottom: 0.5px solid var(--line-strong); }
+.lights { display: flex; gap: 7px; }
+.lights i { width: 11px; height: 11px; border-radius: 50%; background: var(--line-strong); }
+.win-title { font-size: 13px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; min-width: 0; }
+.win-title b { color: var(--ink); font-weight: 560; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Avatars with a speaker ring */
+.av {
+  --c: var(--ink-4); --c-s: var(--fill-press);
+  width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  font-size: 11px; font-weight: 620; color: var(--ink); background: var(--c-s); box-shadow: 0 0 0 1.5px var(--c);
+  transition: background-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+}
+.sp1 { --c: var(--speaker-1); --c-s: var(--speaker-1-soft); }
+.sp2 { --c: var(--speaker-2); --c-s: var(--speaker-2-soft); }
+.sp3 { --c: var(--speaker-3); --c-s: var(--speaker-3-soft); }
+.sp4 { --c: var(--speaker-4); --c-s: var(--speaker-4-soft); }
+.sp5 { --c: var(--speaker-5); --c-s: var(--speaker-5-soft); }
+.sp6 { --c: var(--speaker-6); --c-s: var(--speaker-6-soft); }
+.sp7 { --c: var(--speaker-7); --c-s: var(--speaker-7-soft); }
+.sp8 { --c: var(--speaker-8); --c-s: var(--speaker-8-soft); }
+
+/* Recording */
+.rec-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rec); flex: none; }
+@media (prefers-reduced-motion: no-preference) { .rec-dot.live { animation: breathe 2.4s ease-in-out infinite; } }
+@keyframes breathe { 50% { opacity: 0.45; transform: scale(0.8); } }
+.meter { display: flex; gap: 2px; align-items: center; height: 16px; }
+.meter i { width: 2px; height: 30%; border-radius: 2px; background: currentColor; opacity: 0.75; }
+@media (prefers-reduced-motion: no-preference) {
+  .meter.live i { animation: lvl 900ms linear infinite; }
+  .meter.live i:nth-child(2) { animation-delay: -200ms; } .meter.live i:nth-child(3) { animation-delay: -450ms; }
+  .meter.live i:nth-child(4) { animation-delay: -650ms; } .meter.live i:nth-child(5) { animation-delay: -120ms; }
+}
+@keyframes lvl { 0%, 100% { height: 25%; } 30% { height: 92%; } 60% { height: 45%; } }
+
+/* Cilica working: shimmer label */
+.shimmer {
+  background: linear-gradient(90deg, var(--ink-3) 0%, var(--ink-3) 40%, var(--ink) 50%, var(--ink-3) 60%, var(--ink-3) 100%);
+  background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shim 1.6s linear infinite;
+}
+@keyframes shim { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+@media (prefers-reduced-motion: reduce) { .shimmer { animation: none; background: none; color: var(--ink-3); } }
+
+/* Icon one-shots on parent hover (app's nt-i-* set) */
+.ic-rot, .ic-tip, .ic-wind, .ic-pop, .ic-ring { transition: transform var(--spring-snappy-dur) var(--spring-snappy); }
+:hover > .ic-rot, :focus-visible > .ic-rot { transform: rotate(90deg); }
+:hover > .ic-tip, :focus-visible > .ic-tip { transform: rotate(-12deg) translateY(-1px); }
+:hover > .ic-wind, :focus-visible > .ic-wind { transform: rotate(-40deg); }
+:hover > .ic-pop, :focus-visible > .ic-pop { transform: scale(1.14); }
+:hover > .ic-ring { animation: ring 520ms var(--ease-out); }
+@keyframes ring { 20% { transform: rotate(14deg); } 40% { transform: rotate(-10deg); } 60% { transform: rotate(6deg); } 80% { transform: rotate(-3deg); } }

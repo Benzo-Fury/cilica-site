@@ -1,0 +1,178 @@
+---
+/**
+ * Meetings: Cilica's transcript is the card at the back, and the call floats over its top corner
+ * like a picture-in-picture window: four people as video tiles, with the app name and call controls
+ * in a footer. Whoever is talking gets a ring in their
+ * speaker colour, and their words arrive in the transcript in that same colour. It is one meeting
+ * that never ends: the lines go round and the timestamps keep counting.
+ *
+ * Cilica hasn't met Ana yet, so her lines start as "Person 4". The first time she speaks live it
+ * asks "Is this Ana?", Yes is pressed, and every line she has said takes her name and colour. From
+ * then on it knows her.
+ */
+const PEOPLE = [
+  { k: "you", n: "You", av: "YC", sp: "sp1" },
+  { k: "priya", n: "Priya", av: "PS", sp: "sp2" },
+  { k: "marco", n: "Marco", av: "MD", sp: "sp5" },
+  { k: "ana", n: "Ana", av: "AK", sp: "sp7" },
+];
+---
+<section class="band band-2" id="meetings" aria-labelledby="meet-h">
+  <canvas class="seam" data-ridge-edge="r2" data-seed="1" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="meet-sec">
+      <div class="meet-copy" data-reveal>
+        <h2 class="t-h2" id="meet-h">Advanced meeting transcriptions.</h2>
+        <p class="t-lead">Your meeting is transcribed by your chosen model, speakers are named from voiceprints saved on your computer, and Cilica writes the summary.</p>
+      </div>
+      <div class="mc" id="mc" data-reveal aria-hidden="true">
+        <div class="mc-tx">
+          <div class="mc-lines"><div class="mc-stack"></div></div>
+        </div>
+        <div class="mc-call">
+          <div class="mc-grid">
+            {PEOPLE.map((p) => (
+              <div class={`mc-tile ${p.sp}`} data-p={p.k}>
+                <span class="mc-face">{p.av}</span>
+                <span class="mc-name">
+                  <svg class="mc-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M19 11a7 7 0 0 1-14 0M12 18v3M4 4l16 16" /></svg>
+                  <span class="meter live"><i /><i /><i /><i /></span>{p.n}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div class="mc-foot">
+            <b>Zoom</b>
+            <span class="mc-ctl">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M19 11a7 7 0 0 1-14 0M12 18v3" /></svg></span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="7" width="12" height="10" rx="2" /><path d="M15 11l6-3v8l-6-3z" /></svg></span>
+              <span class="mc-end"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 14.2c5.3-4.6 13.7-4.6 19 0l-2.3 2.9-3.7-1.3v-2.7a12 12 0 0 0-7 0v2.7l-3.7 1.3z" /></svg></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  type Who = "you" | "priya" | "marco" | "ana";
+  const P: Record<Who, { n: string; av: string; sp: string }> = {
+    you: { n: "You", av: "YC", sp: "sp1" },
+    priya: { n: "Priya Shah", av: "PS", sp: "sp2" },
+    marco: { n: "Marco Diaz", av: "MD", sp: "sp5" },
+    ana: { n: "Ana Kovač", av: "AK", sp: "sp7" },
+  };
+  const SCRIPT: [Who, string][] = [
+    ["priya", "People drop off at step three, email verification."],
+    ["marco", "If we move it after the first note, nothing else has to change."],
+    ["ana", "Support hears about that step more than anything else."],
+    ["you", "Let's test the shorter flow with five people before Thursday."],
+    ["priya", "I can book the sessions for Wednesday and Thursday."],
+    ["marco", "I'll have a build with the new order by Tuesday."],
+    ["ana", "Should we tell the people who already dropped off?"],
+    ["you", "Not yet. Let's see what the five sessions tell us first."],
+  ];
+
+  const root = document.getElementById("mc");
+  if (root) {
+    const stack = root.querySelector<HTMLElement>(".mc-stack")!;
+    const tiles = [...root.querySelectorAll<HTMLElement>(".mc-tile")];
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const SPRING = getComputedStyle(document.documentElement).getPropertyValue("--spring-smooth").trim() || "cubic-bezier(.2,.9,.25,1)";
+    const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+    const speak = (k: Who | null) => tiles.forEach((t) => t.toggleAttribute("data-on", t.dataset.p === k));
+    let t = 41 * 60 + 2;
+
+    // Pauses while the card is off screen, so the meeting carries on where it was.
+    let visible = false;
+    const wake: (() => void)[] = [];
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake.splice(0).forEach((f) => f()); }, { threshold: 0.2 }).observe(root);
+    const sleep = async (ms: number) => {
+      await new Promise((r) => setTimeout(r, ms));
+      if (!visible) await new Promise<void>((r) => wake.push(r));
+    };
+
+    // Anything that makes the transcript taller (a new line, or a line wrapping onto a second row as
+    // words arrive) slides the stack up by the difference instead of jumping. Each slide is added on
+    // top of any slide still running, so two in a row never snap.
+    let live = true;
+    const shift = (fn: () => void) => {
+      // Measured on the newest line already there, not the stack, because dropping the oldest line
+      // shrinks the stack by the same amount and would hide the move.
+      const ref = stack.lastElementChild as HTMLElement | null;
+      const before = ref?.getBoundingClientRect().top ?? 0;
+      fn();
+      if (reduce || !live || !ref?.isConnected) return;
+      const d = before - ref.getBoundingClientRect().top;
+      if (Math.abs(d) > 0.5) stack.animate([{ transform: `translateY(${d}px)` }, { transform: "none" }], { duration: 420, easing: SPRING, composite: "add" });
+    };
+    // Ana is the voice Cilica hasn't learned yet. Until she's confirmed her lines read "Person 4" in
+    // grey; with reduced motion there's no live beat, so she's known from the start.
+    const NEW: Who = "ana";
+    let learned = reduce;
+    const label = (k: Who) => (k === NEW && !learned ? { n: "Person 4", av: "P4", sp: "unk" } : P[k]);
+
+    function addLine(k: Who) {
+      const p = label(k);
+      shift(() => {
+        stack.insertAdjacentHTML("beforeend", `<div class="mc-l ${p.sp}" data-k="${k}" data-live><span class="mc-av">${p.av}</span><div><div class="mc-who"><span class="mc-nm">${p.n}</span><span class="mono">${fmt(t)}</span></div><p></p></div></div>`);
+        while (stack.children.length > 12) stack.firstElementChild!.remove();
+      });
+      return stack.lastElementChild as HTMLElement;
+    }
+
+    // Start mid-meeting with the card already full, so the transcript runs the whole height.
+    const seed = (k: Who, s: string) => { const el = addLine(k); el.removeAttribute("data-live"); el.querySelector("p")!.textContent = s; };
+    live = false;
+    t -= 6 * 8;
+    SCRIPT.forEach(([k, s]) => { seed(k, s); t += 6; });
+    live = true;
+
+    // The one time it asks: the chip lands on the unsure line, Yes is pressed, and every line Ana has
+    // said so far, seeded ones included, takes her name and colour with a small pop.
+    async function learn(el: HTMLElement) {
+      const who = el.querySelector<HTMLElement>(".mc-who")!;
+      shift(() => who.insertAdjacentHTML("beforeend", `<span class="mc-ask">Is this Ana?<b>Yes</b><b>No</b></span>`));
+      const ask = who.querySelector<HTMLElement>(".mc-ask")!;
+      await sleep(1300);
+      ask.querySelector("b")!.setAttribute("data-press", "");
+      await sleep(240);
+      learned = true;
+      const p = P[NEW];
+      shift(() => {
+        ask.remove();
+        stack.querySelectorAll<HTMLElement>(`.mc-l[data-k="${NEW}"]`).forEach((l) => {
+          l.classList.replace("unk", p.sp);
+          l.querySelector(".mc-nm")!.textContent = p.n;
+          const av = l.querySelector<HTMLElement>(".mc-av")!;
+          av.textContent = p.av;
+          av.animate([{ transform: "scale(1)" }, { transform: "scale(1.18)" }, { transform: "scale(1)" }], { duration: 420, easing: SPRING });
+        });
+      });
+    }
+
+    if (reduce) {
+      speak(SCRIPT[SCRIPT.length - 1][0]);
+    } else {
+      window.setInterval(() => { if (visible) t++; }, 1000); // Keeps the timestamps moving.
+      (async () => {
+        await sleep(400);
+        for (let i = 0; ; i = (i + 1) % SCRIPT.length) {
+          const [k, text] = SCRIPT[i];
+          speak(k);
+          await sleep(260); // The ring lands a beat before the first word, as a transcript trails speech.
+          const el = addLine(k), out = el.querySelector("p")!;
+          for (const w of text.split(" ")) {
+            shift(() => out.insertAdjacentHTML("beforeend", `${out.childElementCount ? " " : ""}<span>${w}</span>`));
+            await sleep(110 + w.length * 14 + Math.random() * 30); // Paced by word length, so the rhythm reads like speech.
+          }
+          el.removeAttribute("data-live");
+          speak(null);
+          if (k === NEW && !learned) await learn(el);
+          await sleep(620);
+        }
+      })();
+    }
+  }
+</script>

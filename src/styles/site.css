@@ -1,0 +1,121 @@
+/* Site layer over the app tokens: the Ridgeline ramp, section bands, motion curves, type scale and base.
+   Layout: one 1200px column with a 16px+ safe gutter; sections step down the icon's six ridges. */
+
+:root, [data-theme="light"] {
+  color-scheme: light;
+  /* The Ridgeline icon's own colours: cream sky, five taupe ridges, ink base (icons/source/icon.svg). */
+  --sky: #fffdfa;
+  --sky-low: #f7efe2;
+  --r1: #efe5d6; --r2: #d9c9b4; --r3: #b5a695; --r4: #8f8275; --r5: #5a524a; --r6: #1c1a18;
+  /* Grounds: warm whites for most sections, the icon's cream for one, its ink base for the close */
+  --band-1: #fffdfa; --band-2: #fbf8f3; --band-3: #f8f4ee; --band-4: #f3ecdf; --band-6: #1c1a18;
+  /* Secondary text darkened a touch on the deeper grounds */
+  --band-2-ink-2: #514d49; --band-2-ink-3: #5f5a55; --band-3-ink-2: #4a4642; --band-3-ink-3: #57524d; --band-4-ink-2: #47433f; --band-4-ink-3: #524d48;
+  --glow-soft: #e5ecff;
+  --glow-text: #1d4fd8;
+}
+:root {
+  /* The meeting pill is true black on every theme, as on a Mac with a notch. */
+  --island-bg: #0b0a09; --island-ink: #ebe9e7; --island-rec: #f85452;
+  /* The floating call in the meetings scene: shadow-overlay, a touch lighter. */
+  --on-rec: #ffffff; /* Icon on the red end-call button, in both themes. */
+  --shadow-pip: 0 4px 12px rgba(28,25,22,0.07), 0 24px 56px -12px rgba(28,25,22,0.22);
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --sky: #131110;
+  --sky-low: #231a14;
+  --r1: #2e2a26; --r2: #282421; --r3: #221f1c; --r4: #1d1a18; --r5: #171513; --r6: #0f0e0d;
+  --band-1: #221f1c; --band-2: #1d1a18; --band-3: #181614; --band-4: #151312; --band-6: #0c0b0a;
+  --band-2-ink-2: #b7b4b0; --band-2-ink-3: #989591; --band-3-ink-2: #b7b4b0; --band-3-ink-3: #989591; --band-4-ink-2: #b7b4b0; --band-4-ink-3: #989591;
+  --glow-soft: #1b2747;
+  --glow-text: #8fb2ff;
+  --shadow-pip: 0 4px 12px rgba(0,0,0,0.42), 0 28px 64px -12px rgba(0,0,0,0.62), 0 0 0 0.5px rgba(255,255,255,0.1);
+}
+
+:root {
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* Springs from the app (docs/design-system/motion.md) */
+  --spring-snappy: linear(0, 0.0351, 0.1194, 0.2283, 0.3452, 0.4595, 0.5646, 0.6575, 0.7366, 0.8023, 0.8554, 0.8974, 0.9298, 0.9542, 0.9722, 0.985, 0.9939, 0.9997, 1.0033, 1.0053, 1.0061, 1.0063, 1.0059, 1.0054, 1.0047, 1.0039, 1.0032, 1.0026, 1);
+  --spring-snappy-dur: 330ms;
+  --spring-smooth: linear(0, 0.0188, 0.0666, 0.1327, 0.2091, 0.2898, 0.3706, 0.4487, 0.5221, 0.5897, 0.6509, 0.7054, 0.7535, 0.7954, 0.8316, 0.8625, 0.8887, 0.9107, 0.929, 0.9442, 0.9566, 0.9668, 0.9749, 0.9814, 0.9866, 0.9906, 0.9937, 0.9961, 1);
+  --spring-smooth-dur: 380ms;
+  --spring-bouncy: linear(0, 0.0235, 0.0841, 0.1689, 0.2676, 0.3719, 0.4756, 0.5742, 0.6649, 0.7456, 0.8155, 0.8745, 0.923, 0.9616, 0.9913, 1.0132, 1.0286, 1.0385, 1.0439, 1.0459, 1.0453, 1.0429, 1.0392, 1.0347, 1.03, 1.0252, 1.0206, 1.0163, 1.0125, 1.0092, 1.0063, 1.004, 1.0021, 1.0007, 0.9996, 0.9988, 0.9983, 0.998, 0.9979, 0.9979, 1);
+  --spring-bouncy-dur: 720ms;
+  --spring-gentle: linear(0, 0.0373, 0.1231, 0.2294, 0.3399, 0.4451, 0.5403, 0.6235, 0.6946, 0.7542, 0.8035, 0.8437, 0.8764, 0.9026, 0.9236, 0.9402, 0.9534, 0.9637, 0.9719, 0.9782, 0.9832, 0.987, 0.99, 0.9923, 0.9941, 0.9955, 0.9965, 0.9974, 1);
+  --spring-gentle-dur: 650ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --dur-instant: 80ms; --dur-fast: 120ms; --dur-base: 180ms; --dur-slow: 280ms;
+  --sq: 1;
+  --focus: 0 0 0 2px var(--bg-canvas), 0 0 0 4px var(--accent-text);
+  --page: 1200px;
+  --gutter-l: max(20px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(20px, env(safe-area-inset-right, 0px));
+  --section-y: clamp(80px, 10vw, 140px);
+}
+@supports (corner-shape: squircle) {
+  :root { --sq: 1.45; }
+  .sq { corner-shape: squircle; }
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; scroll-padding-top: 88px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0; background: var(--bg-canvas); color: var(--ink);
+  font-family: var(--font-sans); font-size: 16px; line-height: 26px; letter-spacing: -0.008em;
+  font-optical-sizing: auto; font-feature-settings: "cv05", "cv08";
+  overflow-x: clip;
+}
+img, svg, canvas { max-width: 100%; }
+::selection { background: var(--glow-soft); color: var(--ink); }
+:focus-visible { outline: none; box-shadow: var(--focus); border-radius: 6px; }
+button { font: inherit; color: inherit; cursor: default; }
+a { color: inherit; text-decoration-color: var(--line-strong); text-decoration-thickness: 1px; text-underline-offset: 3px; transition: text-decoration-color var(--dur-fast) var(--ease-out); }
+a:hover { text-decoration-color: currentColor; }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; font-weight: 640; }
+p { margin: 0; text-wrap: pretty; }
+ul, ol { margin: 0; padding: 0; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.tnum { font-variant-numeric: tabular-nums; }
+.vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+html { scrollbar-color: var(--line-strong) transparent; }
+input, textarea { caret-color: var(--cilica-glow); }
+
+/* ── Layout ── */
+.wrap { width: 100%; max-width: calc(var(--page) + var(--gutter-l) + var(--gutter-r)); margin: 0 auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.band { position: relative; background: var(--band-bg, var(--bg-canvas)); color: var(--ink); }
+.band > .wrap { padding-block: var(--section-y); }
+.band-1 { --band-bg: var(--band-1); }
+.band-2 { --band-bg: var(--band-2); --ink-2: var(--band-2-ink-2); --ink-3: var(--band-2-ink-3); }
+.band-3 { --band-bg: var(--band-3); --ink-2: var(--band-3-ink-2); --ink-3: var(--band-3-ink-3); }
+.band-4 { --band-bg: var(--band-4); --ink-2: var(--band-4-ink-2); --ink-3: var(--band-4-ink-3); }
+.band-6 { --band-bg: var(--band-6); }
+/* Content on the ink ground switches to dark tokens; keep its text colour from them. */
+.band [data-theme] { color: var(--ink); }
+/* Blocks that switch theme inside a band re-resolve their text colour. */
+
+/* ── Type ── */
+.t-hero { font-size: clamp(42px, 6.2vw, 78px); line-height: 1.02; font-weight: 660; letter-spacing: -0.037em; }
+.t-h2 { font-size: clamp(32px, 4.4vw, 52px); line-height: 1.06; font-weight: 650; letter-spacing: -0.032em; }
+.t-h3 { font-size: clamp(19px, 1.8vw, 22px); line-height: 1.3; font-weight: 620; letter-spacing: -0.017em; }
+.t-lead { font-size: clamp(17px, 1.6vw, 19px); line-height: 1.6; font-weight: 430; letter-spacing: -0.011em; color: var(--ink-2); max-width: 58ch; }
+.t-body { font-size: 16px; line-height: 26px; color: var(--ink-2); max-width: 60ch; }
+.t-small { font-size: 14px; line-height: 21px; color: var(--ink-2); }
+.t-cap { font-size: 12px; line-height: 16px; color: var(--ink-3); font-weight: 500; }
+
+.sec-head { display: grid; gap: 18px; max-width: 760px; }
+.sec-head + * { margin-top: clamp(40px, 6vw, 72px); }
+
+/* ── Reveal: visible at rest, settles once ── */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] { transform: translateY(12px); transition: transform var(--spring-gentle-dur) var(--spring-gentle); }
+  .js [data-reveal].in { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 120ms !important; transition-timing-function: linear !important; }
+}

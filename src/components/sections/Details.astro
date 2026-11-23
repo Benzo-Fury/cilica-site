@@ -1,0 +1,226 @@
+---
+import Icon from "../Icon.astro";
+import SearchDemo from "../../islands/SearchDemo.tsx";
+import { importApps } from "../../lib/imports";
+
+/* The two choices people make: the model Cilica thinks with and the engine that writes transcripts.
+   A key marks a service used with the person's own key, a screen one that runs on their computer. */
+const BYO = [
+  { k: "m", label: "Cilica's AI model", items: [{ n: "Anthropic" }, { n: "OpenAI-compatible" }, { n: "Ollama", local: true }] },
+  { k: "t", label: "Transcription", items: [{ n: "Whisper", local: true }, { n: "Soniox" }, { n: "Deepgram" }, { n: "AssemblyAI" }, { n: "OpenAI" }] },
+];
+/* Group names as the app's import page shows them. */
+const GROUPS: Record<string, string> = { notes: "Notes app", meetings: "Meeting note taker", platforms: "Meeting app" };
+/* The selected word first, then what the bundled thesaurus offers for it, closest first. */
+const SYNONYMS = ["quick", "speedy", "fast", "rapid", "swift", "prompt", "agile", "nimble", "spry"];
+/* The format bar's buttons, in the app's order: marks, blocks, link. */
+const FORMAT = [
+  ["Bold", "Italic", "Strikethrough", "Superscript", "Subscript", "Code"],
+  ["Heading1", "Heading2", "TextQuote"],
+  ["Link"],
+] as const;
+---
+<section class="band band-4 details" aria-labelledby="details-h">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <h2 class="t-h2" id="details-h">The small things.</h2>
+      <p class="t-lead">Details you'll find once you've used it for a while.</p>
+    </div>
+    <!-- Three sizes: a large pair of demos, a medium pair the other way round, a full-width strip. -->
+    <ul class="st">
+      <li class="st-item st-big st-search" data-reveal>
+        <div class="st-well"><SearchDemo client:visible /></div>
+        <h3>Search that understands what you mean</h3>
+        <p>Press <span class="kbd">⌘</span> <span class="kbd">K</span> and type the way you'd ask a colleague. Each filter Cilica understood shows as a chip, so you can see what it searched for.</p>
+      </li>
+
+      <li class="st-item st-big st-import" data-reveal>
+        <div class="st-well">
+          <ul class="imp-logos" aria-label={`${importApps.length} apps Cilica imports from`}>
+            {importApps.map((a, i) => (
+              <li>
+                <button type="button" class="imp-logo" data-i={i} aria-label={a.name} aria-describedby="imp-pop">
+                  <img src={`/logos/${a.file}`} alt="" width="32" height="32" loading="lazy" decoding="async" />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div class="imp-pop glass-strong sq" id="imp-pop" role="tooltip" hidden>
+            <div class="imp-pop-head">
+              <img src="" alt="" width="28" height="28" />
+              <div><b></b><span></span></div>
+            </div>
+            <span class="imp-pop-sub">Comes across</span>
+            <ul class="imp-pop-pills"></ul>
+          </div>
+          <script type="application/json" id="imp-data" set:html={JSON.stringify(importApps.map((a) => ({ n: a.name, f: a.file, g: GROUPS[a.group] ?? "", c: a.carries })))} />
+        </div>
+        <h3>Bring your notes with you</h3>
+        <p>Import from {importApps.length} apps, plus Markdown, Word, text and transcript files. Importing again brings in only what changed, and any import can be undone.</p>
+      </li>
+
+      <li class="st-item st-thes" data-reveal>
+        <div class="st-well">
+          <!-- The app's format bar (SelectionToolbar + SynonymPanel): its buttons in order, and synonyms as pills under them. -->
+          <div class="thes">
+            <p>The rollout was <span class="thes-sel">{SYNONYMS[0]}</span> and quiet.</p>
+            <div class="fbar glass-strong sq" role="toolbar" aria-label="Format text">
+              <div class="fbar-row" aria-hidden="true">
+                {FORMAT.map((g, gi) => (
+                  <>
+                    {gi > 0 && <span class="fbar-div" />}
+                    {g.map((name) => <span class={`fbar-btn${name === "Heading1" || name === "Heading2" || name === "TextQuote" ? " fbar-block" : ""}`}><Icon name={name} /></span>)}
+                  </>
+                ))}
+              </div>
+              <div class="fbar-syn" role="group" aria-label="Synonyms">
+                <p class="fbar-syn-h">Replace with</p>
+                <div class="fbar-words">
+                  {SYNONYMS.slice(1).map((w) => <button type="button">{w}</button>)}
+                </div>
+              </div>
+            </div>
+          </div>
+          <span class="thes-offline"><Icon name="WifiOff" class="i-xs" />Works offline</span>
+        </div>
+        <h3>Built-in thesaurus</h3>
+        <p>Select a word and synonyms sit under the formatting bar. Pick one to swap it in, and one undo puts the original back.</p>
+      </li>
+
+      <li class="st-item st-models" data-reveal>
+        <div class="st-well">
+          <div class="byo">
+            {BYO.map((g) => (
+              <div class="byo-g">
+                <span class="byo-h">{g.label}</span>
+                <div class="byo-row" role="radiogroup" aria-label={g.label}>
+                  {g.items.map((it, i) => (
+                    <button type="button" class="byo-chip" role="radio" aria-checked={i === 0 ? "true" : "false"} data-k={g.k} data-n={it.n} data-local={it.local ? "1" : undefined}>
+                      <Icon name={it.local ? "Monitor" : "KeyRound"} class="i-xs" />{it.n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <p class="byo-note" aria-live="polite">Whisper runs on your computer, Anthropic with your own key.</p>
+          </div>
+        </div>
+        <h3>Bring your own models</h3>
+        <p>Use your own model for Cilica and for transcription: a service you have a key for, like Anthropic or Soniox, or Ollama and Whisper running on your computer.</p>
+      </li>
+
+      <!-- Placeholder for the screen overlay: the call pill on a stand-in screen. -->
+      <li class="st-item st-pill" data-reveal>
+        <div class="st-pill-text">
+          <h3>A pill while you're in a call</h3>
+          <p>A small floating pill shows the timer and the level, and opens to show the meeting and Stop.</p>
+        </div>
+        <div class="st-well">
+          <div class="desk-bar" aria-hidden="true"><b>Cilica</b><span>File</span><span>Edit</span><span>View</span><span>Window</span><span class="desk-clock mono">Tue 10:24</span></div>
+          <button type="button" class="island" aria-expanded="false" aria-label="Recording, Weekly 1:1 with Sam. Show or hide details">
+            <span class="rec-dot live"></span><span class="mono island-time">24:08</span>
+            <span class="island-more"><span class="island-inner"><span class="island-title">Weekly 1:1 with Sam</span><span class="meter live"><i></i><i></i><i></i><i></i><i></i></span><span class="island-stop"></span></span></span>
+          </button>
+          <div class="desk-call" aria-hidden="true"><i></i><i></i></div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<script>
+  const reduce = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const settle = (el: Element) => (el as HTMLElement).animate?.([{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }], { duration: reduce() ? 0 : 320, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
+
+  /* Bring your own models: one choice per row, and a line saying where the two choices run. */
+  for (const byo of document.querySelectorAll<HTMLElement>(".byo")) {
+    const note = byo.querySelector<HTMLElement>(".byo-note")!;
+    byo.addEventListener("click", (e) => {
+      const chip = (e.target as HTMLElement).closest<HTMLButtonElement>(".byo-chip");
+      if (!chip) return;
+      for (const c of byo.querySelectorAll<HTMLElement>(`.byo-chip[data-k="${chip.dataset.k}"]`)) c.setAttribute("aria-checked", String(c === chip));
+      const pick = (k: string) => byo.querySelector<HTMLElement>(`.byo-chip[data-k="${k}"][aria-checked="true"]`)!;
+      const m = pick("m"), t = pick("t");
+      const here = (c: HTMLElement) => c.dataset.local === "1";
+      note.textContent = here(m) && here(t) ? "Both run on your computer."
+        : !here(m) && !here(t) ? "Both run with your own keys."
+        : `${here(m) ? m.dataset.n : t.dataset.n} runs on your computer, ${here(m) ? t.dataset.n : m.dataset.n} with your own key.`;
+      settle(note);
+    });
+  }
+
+  /* Import: hovering or focusing an app shows what comes across from it, as on the app's import page. */
+  for (const well of document.querySelectorAll<HTMLElement>(".st-import .st-well")) {
+    const apps: { n: string; f: string; g: string; c: string[] }[] = JSON.parse(well.querySelector("#imp-data")!.textContent!);
+    const pop = well.querySelector<HTMLElement>(".imp-pop")!;
+    const img = pop.querySelector("img")!, name = pop.querySelector("b")!, group = pop.querySelector(".imp-pop-head span")!;
+    const pills = pop.querySelector(".imp-pop-pills")!;
+    const check = '<svg class="i i-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+    let current: HTMLElement | null = null, hideT = 0;
+
+    const show = (btn: HTMLElement) => {
+      clearTimeout(hideT);
+      const a = apps[Number(btn.dataset.i)];
+      if (current !== btn) {
+        current?.removeAttribute("data-on");
+        current = btn; btn.setAttribute("data-on", "");
+        img.src = `/logos/${a.f}`; name.textContent = a.n; group.textContent = a.g;
+        pills.innerHTML = a.c.map((c) => `<li class="chip">${check}${c}</li>`).join("");
+      }
+      const opening = pop.hidden;
+      pop.hidden = false;
+      // Above the app if it fits, otherwise below; kept inside the well.
+      const w = well.getBoundingClientRect(), b = btn.getBoundingClientRect(), p = pop.getBoundingClientRect();
+      const left = Math.min(Math.max(b.left - w.left + b.width / 2 - p.width / 2, 12), w.width - p.width - 12);
+      const above = b.top - w.top - p.height - 8;
+      const top = above >= 8 ? above : b.bottom - w.top + 8;
+      pop.style.left = `${left}px`; pop.style.top = `${top}px`;
+      pop.style.transformOrigin = `${b.left - w.left + b.width / 2 - left}px ${above >= 8 ? "100%" : "0%"}`;
+      if (opening && !reduce()) pop.animate([{ opacity: 0, transform: "scale(0.96)" }, { opacity: 1, transform: "none" }], { duration: 220, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
+    };
+    const close = () => { pop.hidden = true; current?.removeAttribute("data-on"); current = null; };
+    // A short delay so moving from one app to the next swaps the card instead of flashing it.
+    const hide = () => { clearTimeout(hideT); hideT = window.setTimeout(close, 80); };
+    const logoAt = (t: EventTarget | null) => (t instanceof Element ? t.closest<HTMLElement>(".imp-logo") : null);
+
+    // Shown only while the pointer is on an app (or one has keyboard focus); gone as soon as it leaves.
+    well.addEventListener("pointerover", (e) => { const b = logoAt(e.target); if (b) show(b); });
+    well.addEventListener("pointerout", (e) => { if (logoAt(e.target) && !logoAt(e.relatedTarget)) hide(); });
+    well.addEventListener("focusin", (e) => { const b = logoAt(e.target); if (b?.matches(":focus-visible")) show(b); });
+    well.addEventListener("focusout", (e) => { if (!logoAt(e.relatedTarget)) hide(); });
+    well.addEventListener("keydown", (e) => { if (e.key === "Escape" && !pop.hidden) close(); });
+  }
+
+  /* Thesaurus: the format bar sits under the selected word, centred on it like the app places it.
+     A synonym takes the word's place and stays selected, so another can be tried. */
+  for (const thes of document.querySelectorAll<HTMLElement>(".thes")) {
+    const sel = thes.querySelector<HTMLElement>(".thes-sel")!, bar = thes.querySelector<HTMLElement>(".fbar")!;
+    const place = () => {
+      const t = thes.getBoundingClientRect(), s = sel.getBoundingClientRect();
+      const left = Math.min(Math.max(s.left - t.left + s.width / 2 - bar.offsetWidth / 2, 0), Math.max(t.width - bar.offsetWidth, 0));
+      bar.style.left = `${left}px`;
+      bar.style.top = `${s.bottom - t.top + 8}px`;
+    };
+    place();
+    new ResizeObserver(place).observe(thes);
+    bar.addEventListener("click", (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>(".fbar-words button");
+      if (!b) return;
+      [sel.textContent, b.textContent] = [b.textContent, sel.textContent];
+      place();
+    });
+  }
+
+  /* Call pill: it opens on arrival, and a click opens or closes it; the timer keeps counting. */
+  for (const item of document.querySelectorAll<HTMLElement>(".st-pill")) {
+    const pill = item.querySelector<HTMLButtonElement>(".island")!, time = item.querySelector<HTMLElement>(".island-time")!;
+    pill.addEventListener("click", () => pill.setAttribute("aria-expanded", String(pill.getAttribute("aria-expanded") !== "true")));
+    new IntersectionObserver((es, io) => {
+      if (!es[0].isIntersecting) return;
+      io.disconnect();
+      setTimeout(() => pill.setAttribute("aria-expanded", "true"), reduce() ? 0 : 600);
+    }, { threshold: 0.6 }).observe(pill);
+    let s = 24 * 60 + 8;
+    setInterval(() => { s++; time.textContent = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; }, 1000);
+  }
+</script>

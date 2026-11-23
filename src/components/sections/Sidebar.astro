@@ -1,0 +1,253 @@
+---
+/**
+ * Cilica in the sidebar. The panel is drawn the way the app draws it (title bar, steps, proposal cards with Undo once accepted, the composer glow) and works through example requests forever.
+ * The list beside it names each request and lights the one that is running.
+ * Every request here is something the app's tools can do (spec › AI assistant › Tools).
+ */
+import Icon from "../Icon.astro";
+const runs = [
+  "Sort my inbox into categories",
+  "Pull out the action items from the Acme call",
+  "What did Priya say about onboarding?",
+  "Clean up my notes from the Marco call",
+  "Summarise last week in a new note",
+  "Merge my two onboarding notes",
+];
+---
+<section class="band band-1" id="cilica" aria-labelledby="cilica-h">
+  <div class="wrap cp-sec">
+    <div class="cp-copy" data-reveal>
+      <h2 class="t-h2" id="cilica-h">Cilica works beside every note.</h2>
+      <p class="t-lead">It's built into the sidebar and can read and edit every note you have, so you can ask it to sort, clean up, summarise or find anything.</p>
+      <span class="cp-cap" id="cp-cap">What it's doing now. Click one to see it.</span>
+      <ol class="cp-list" id="cp-list" aria-labelledby="cp-cap">
+        {runs.map((r) => <li><button type="button">{r}</button></li>)}
+      </ol>
+    </div>
+
+    <div class="cp-side" data-reveal>
+    <div class="cp" id="cp" role="img" aria-label="Cilica's sidebar working through the requests listed beside it">
+      <div class="cp-head">
+        <span class="cp-back" hidden><Icon name="ChevronLeft" class="i-sm" /></span>
+        <strong class="cp-title">Cilica</strong>
+        <span class="cp-clock"></span>
+        <span class="cp-tools"><Icon name="SquarePen" class="i-sm" /><Icon name="PanelRight" class="i-sm" /></span>
+      </div>
+      <div class="cp-body"><div class="cp-thread"></div></div>
+      <div class="cp-comp">
+        <span class="cp-input">Ask, or tell Cilica what to do</span>
+        <span class="cp-send"><Icon name="ArrowUp" class="i-xs" /></span>
+      </div>
+      <span class="cp-glow" aria-hidden="true"></span>
+    </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const svg = (d: string, w = 14) => `<svg class="i" width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const I = {
+    search: svg('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'),
+    file: svg('<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>'),
+    move: svg('<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="m12 10 3 3-3 3"/><path d="M8 13h7"/>'),
+    pen: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
+    audio: svg('<path d="M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3"/>'),
+    merge: svg('<path d="m8 6 4-4 4 4"/><path d="M12 2v10.3a4 4 0 0 1-1.17 2.83L4 22"/><path d="m20 22-5-5"/>'),
+    chev: svg('<path d="m9 18 6-6-6-6"/>', 12),
+    check: svg('<path d="M20 6 9 17l-5-5"/>'),
+    undo: svg('<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>', 13),
+  };
+
+  type Icon = keyof typeof I;
+  type Step = { icon: Icon; live: string; done: string };
+  type End =
+    | { kind: "changes"; said: string }
+    | { kind: "answer"; html: string }
+    | { kind: "edit"; note: string; hunks: string[] }
+    | { kind: "confirm"; action: string; subject: string; notes: string[]; accept: string; done: string };
+  type Run = { title: string; ask: string; steps: Step[]; end: End };
+
+  // The same order as the list beside the panel.
+  const RUNS: Run[] = [
+    { title: "Sort my inbox", ask: "Sort my inbox into categories",
+      steps: [
+        { icon: "search", live: "Searching the Inbox", done: "Searched the Inbox, 6 notes" },
+        { icon: "file", live: "Reading 6 notes", done: "Read 6 notes" },
+        { icon: "move", live: "Moving notes", done: "Moved 6 notes" },
+      ],
+      end: { kind: "changes", said: "I moved 3 notes to Product, 2 to Hiring and 1 to Personal." } },
+    { title: "Acme action items", ask: "Pull out the action items from the Acme call",
+      steps: [
+        { icon: "file", live: "Reading “Acme kickoff”", done: "Read “Acme kickoff”" },
+        { icon: "audio", live: "Reading the transcript", done: "Read the transcript" },
+      ],
+      end: { kind: "edit", note: "Acme kickoff", hunks: ["<ins>Send Acme the revised deck · You, Thu</ins>", "<ins>Draft the pilot plan · Priya, Mon</ins>"] } },
+    { title: "Priya on onboarding", ask: "What did Priya say about onboarding?",
+      steps: [
+        { icon: "search", live: "Searching notes for “Priya onboarding”", done: "Searched 3 notes" },
+      ],
+      end: { kind: "answer", html: 'People drop off at email verification, and Priya wants to try a magic link before pricing changes <span class="cp-chip">14:22</span>. She owns the rollout plan and shares it on Thursday <span class="cp-chip">15:01</span>.' } },
+    { title: "Tidy the Marco notes", ask: "Clean up my notes from the Marco call",
+      steps: [
+        { icon: "file", live: "Reading “Pricing interview, Marco”", done: "Read “Pricing interview, Marco”" },
+      ],
+      end: { kind: "edit", note: "Pricing interview, Marco", hunks: ["<del>seats feel bad for ppl who rarely log in??</del> <ins>Seat-based pricing feels punishing for occasional users.</ins>", "<del>send him pricing pg</del> <ins>Send Marco the pricing page.</ins>"] } },
+    { title: "Last week", ask: "Summarise last week in a new note",
+      steps: [
+        { icon: "search", live: "Finding notes from 16 to 22 Nov", done: "Found 12 notes" },
+        { icon: "file", live: "Reading 12 notes", done: "Read 12 notes" },
+        { icon: "pen", live: "Writing “Week of 16 Nov”", done: "Wrote “Week of 16 Nov”" },
+      ],
+      end: { kind: "changes", said: "I wrote “Week of 16 Nov” from 12 notes. It’s in your notes now." } },
+    { title: "Merge onboarding", ask: "Merge my two onboarding notes",
+      steps: [
+        { icon: "search", live: "Searching notes for “onboarding”", done: "Searched 4 notes" },
+        { icon: "file", live: "Reading 2 notes", done: "Read 2 notes" },
+      ],
+      end: { kind: "confirm", action: "Merge", subject: "2 notes", notes: ["Onboarding ideas", "Onboarding drop-off"], accept: "Merge into “Onboarding”", done: "Merged" } },
+  ];
+
+  const root = document.getElementById("cp");
+  const list = document.getElementById("cp-list");
+  if (root && list) {
+    const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+    const thread = q(".cp-thread"), input = q(".cp-input"), comp = q(".cp-comp");
+    const title = q(".cp-title"), clock = q(".cp-clock"), back = q(".cp-back");
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const ABORT = Symbol("abort");
+
+    // Time only passes while the panel is on screen, so the loop never runs unseen. Every wait can be
+    // cut short when you click another request, which aborts the turn on screen.
+    let onScreen = false, wake: (() => void) | null = null, cancel: (() => void) | null = null;
+    new IntersectionObserver(([e]) => { onScreen = e.intersectionRatio > 0.5; if (onScreen && wake) { wake(); wake = null; } }, { threshold: [0, 0.5, 1] }).observe(root);
+    const wait = (ms: number) => new Promise<void>((res, rej) => { const t = setTimeout(res, ms); cancel = () => { clearTimeout(t); rej(ABORT); }; });
+    const visible = () => (onScreen ? Promise.resolve() : new Promise<void>((res, rej) => { wake = res; cancel = () => { wake = null; rej(ABORT); }; }));
+    const sleep = async (ms: number) => { if (reduce) return; await visible(); await wait(ms); await visible(); };
+    const SPRING = (() => {
+      const v = getComputedStyle(document.documentElement).getPropertyValue("--spring-smooth").trim();
+      try { if (v) { document.body.animate([], { easing: v }); return v; } } catch {}
+      return "cubic-bezier(0.2, 0.9, 0.25, 1)";
+    })();
+    // Anything added to the thread, or the cards under it, pushes what is above it up. Measure, change,
+    // then slide the thread from where it was, so nothing jumps.
+    const shift = (fn: () => void) => {
+      const before = thread.getBoundingClientRect().top;
+      fn();
+      if (reduce) return;
+      const d = before - thread.getBoundingClientRect().top;
+      if (Math.abs(d) > 0.5) thread.animate([{ transform: `translateY(${d}px)` }, { transform: "none" }], { duration: 360, easing: SPRING, composite: "add" });
+    };
+    const add = (el: HTMLElement, html: string) => {
+      let made!: HTMLElement;
+      const go = () => { el.insertAdjacentHTML("beforeend", html); made = el.lastElementChild as HTMLElement; };
+      if (el === thread) shift(go); else go();
+      return made;
+    };
+    const undo = `<span class="cp-btn cp-undo">${I.undo}Undo</span>`;
+    let t0 = 0, timer = 0;
+
+    function rest() {
+      title.textContent = "Cilica"; back.hidden = true;
+      thread.innerHTML = '<div class="cp-rest"><p class="cp-rest-t">Ready when you are</p><p class="cp-rest-s">Cilica can read every note and transcript you have.</p></div>';
+    }
+    function working(on: boolean) {
+      root!.toggleAttribute("data-working", on);
+      clearInterval(timer);
+      if (on) { t0 = Date.now(); clock.textContent = "Working · 0 s"; timer = window.setInterval(() => (clock.textContent = `Working · ${Math.round((Date.now() - t0) / 1000)} s`), 1000); }
+      else clock.textContent = "";
+    }
+    function reset() {
+      working(false); comp.classList.remove("cp-typing"); root!.classList.remove("cp-out");
+      input.textContent = "Ask, or tell Cilica what to do"; rest();
+    }
+    async function type(text: string) {
+      if (reduce) return;
+      comp.classList.add("cp-typing");
+      for (let i = 1; i <= text.length; i++) { input.innerHTML = `${text.slice(0, i)}<i class="cp-caret"></i>`; await sleep(26 + Math.random() * 34); }
+      await sleep(380);
+    }
+
+    // Sending, the way a chat does it: the box empties at once, the send button gives, the resting
+    // screen lifts away, and your message rises into the thread from just above the composer.
+    async function send(text: string) {
+      comp.classList.remove("cp-typing");
+      input.textContent = "Cilica is working on this…";
+      const bubble = `<div class="cp-me"><span>${text}</span></div>`;
+      if (reduce) { thread.innerHTML = bubble; return; }
+      q(".cp-send").animate([{ transform: "scale(1)" }, { transform: "scale(0.85)" }, { transform: "scale(1)" }], { duration: 240, easing: "ease-out" });
+      const resting = thread.querySelector<HTMLElement>(".cp-rest");
+      if (resting) await resting.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, easing: "ease-out", fill: "forwards" }).finished;
+      thread.innerHTML = bubble;
+      thread.querySelector<HTMLElement>(".cp-me > span")!.animate(
+        [{ opacity: 0, transform: "translateY(16px) scale(0.96)" }, { opacity: 1, transform: "none" }],
+        { duration: 380, easing: SPRING },
+      );
+      await sleep(420);
+    }
+    // The card waits; then its main button fills, as a hand would press it.
+    async function press(card: HTMLElement, foot: string) {
+      await sleep(900);
+      card.querySelector(".cp-go")!.classList.add("cp-filling");
+      await sleep(1500);
+      shift(() => (card.querySelector(".cp-foot")!.innerHTML = foot));
+    }
+
+    async function play(run: Run) {
+      await type(run.ask);
+      title.textContent = run.title; back.hidden = false;
+      working(true);
+      await send(run.ask);
+      for (const st of run.steps) {
+        const step = add(thread, `<div class="cp-step cp-in">${I[st.icon]}<span class="cp-shimmer">${st.live}…</span></div>`);
+        await sleep(1400);
+        step.innerHTML = `${I[st.icon]}<span>${st.done}</span>${I.chev}`;
+      }
+      await sleep(350);
+      const e = run.end;
+      if (e.kind === "answer") {
+        add(thread, `<p class="cp-ai cp-in">${e.html}</p>`);
+        working(false);
+      } else if (e.kind === "changes") {
+        add(thread, `<div class="cp-said cp-in"><p class="cp-ai">${e.said}</p>${undo}</div>`);
+        working(false);
+      } else {
+        const card = e.kind === "edit"
+          ? add(thread, `<div class="cp-card cp-in"><div class="cp-card-hd">${I.pen}<b>Edit</b><span>${e.note}</span><em>${e.hunks.length} changes</em></div><div class="cp-hunks">${e.hunks.map((h) => `<p class="cp-hunk">${h}</p>`).join("")}</div><div class="cp-foot"><span class="cp-faint">Needs your review</span><span class="cp-btn">Reject</span><span class="cp-btn cp-go"><i></i><span>${I.check}Accept</span></span></div></div>`)
+          : add(thread, `<div class="cp-card cp-in"><div class="cp-card-hd">${I.merge}<b>${e.action}</b><span>${e.subject}</span></div><ul class="cp-notes">${e.notes.map((x) => `<li>${I.file}${x}</li>`).join("")}</ul><div class="cp-foot"><span class="cp-faint">Asks every time</span><span class="cp-btn">Keep separate</span><span class="cp-btn cp-go cp-danger"><i></i><span>${e.accept}</span></span></div></div>`);
+        clearInterval(timer); clock.textContent = "Waiting for you";
+        await press(card, `<span class="cp-done">${I.check}${e.kind === "edit" ? "Accepted" : e.done}</span>${undo}`);
+        working(false);
+      }
+      input.textContent = "Ask, or tell Cilica what to do";
+      if (reduce) return;
+      await sleep(3800);
+      root!.classList.add("cp-out"); await sleep(350);
+      reset();
+      await sleep(700);
+    }
+
+    // The loop, forever. Clicking a request in the list plays that one next, at once, and the
+    // loop carries on from there.
+    const items = [...list.querySelectorAll<HTMLButtonElement>("button")];
+    let next = 0, now = -1;
+    const light = (n: number) => items.forEach((b, k) => b.toggleAttribute("data-on", k === n));
+    async function loop() {
+      await sleep(600).catch(() => {});
+      for (;;) {
+        now = next; next = (now + 1) % RUNS.length; light(now);
+        try { await play(RUNS[now]); } catch (err) { if (err !== ABORT) throw err; reset(); }
+      }
+    }
+    const pick = (k: number) => {
+      if (k === now) return;
+      next = k;
+      if (reduce) { now = k; light(k); reset(); play(RUNS[k]); return; }
+      cancel?.();
+    };
+    items.forEach((b, k) => b.addEventListener("click", () => pick(k)));
+
+    rest();
+    if (reduce) { now = 0; light(0); play(RUNS[0]); }
+    else loop();
+  }
+</script>
