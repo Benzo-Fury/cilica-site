@@ -1,0 +1,116 @@
+---
+/**
+ * A comparison page: who it's for in the heading, a fair side-by-side table with its sources, what
+ * changes when you switch (including when the other app suits you better), what an import brings
+ * across, questions, the other comparisons, then the same download and footer as the home page.
+ */
+import type { GetStaticPaths } from "astro";
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Icon from "../components/Icon.astro";
+import Close from "../components/sections/Close.astro";
+import DownloadButton from "../islands/DownloadButton.tsx";
+import { getRelease, downloadsFor } from "../lib/release";
+import { comparisons, type Comparison } from "../lib/compare";
+import { importApps } from "../lib/imports";
+import { SITE, breadcrumb, faq, webPage } from "../lib/schema";
+
+export const getStaticPaths = (() => comparisons.map((c) => ({ params: { slug: c.slug }, props: { c } }))) satisfies GetStaticPaths;
+
+interface Props { c: Comparison }
+const { c } = Astro.props;
+const release = await getRelease();
+const downloads = downloadsFor(release);
+const url = `${SITE}/${c.slug}/`;
+const imp = c.importFrom ? importApps.find((a) => a.name === c.importFrom) : undefined;
+const others = comparisons.filter((o) => o.slug !== c.slug);
+const schema = [
+  webPage({ url, name: c.title, description: c.description, breadcrumb: true }),
+  breadcrumb(url, c.name),
+  faq(url, c.faq),
+];
+---
+<Base title={c.title} description={c.description} schema={schema}>
+  <Nav downloads={downloads} />
+  <main>
+    <section class="band band-1 cmp-top" id="top" aria-labelledby="cmp-h">
+      <div class="wrap cmp-top-in">
+        <nav class="cmp-crumbs" aria-label="Breadcrumb">
+          <ol><li><a href="/">Cilica</a></li><li aria-current="page">{c.name}</li></ol>
+        </nav>
+        <h1 class="t-hero cmp-h" id="cmp-h">{c.h1}</h1>
+        <p class="t-lead">{c.lead}</p>
+        <div class="hero-act cmp-act">
+          <DownloadButton client:load downloads={downloads} />
+          <a class="hero-link" href="/">See the whole app<Icon name="ArrowRight" class="i-sm nudge" /></a>
+        </div>
+        <p class="hero-note">Free and open source for Mac, Windows and Linux. <a href={release.pageUrl}>Version <span class="mono">{release.version}</span></a></p>
+      </div>
+    </section>
+
+    <section class="band band-2" aria-labelledby="cmp-table-h">
+      <canvas class="seam" data-ridge-edge="r2" data-seed="1" aria-hidden="true"></canvas>
+      <div class="wrap">
+        <div class="sec-head" data-reveal>
+          <h2 class="t-h2" id="cmp-table-h">{c.tableHead}</h2>
+          <p class="t-lead">{c.tableLead}</p>
+        </div>
+        <div class="cmp-card sq" data-reveal>
+          <table class="cmp-table">
+            <thead><tr><td></td><th scope="col">Cilica</th><th scope="col">{c.other}</th></tr></thead>
+            <tbody>
+              {c.rows.map((r) => <tr><th scope="row">{r.label}</th><td data-label="Cilica">{r.cilica}</td><td data-label={c.other}>{r.other}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+        <p class="cmp-src" data-reveal>
+          Checked against {c.sources.map((s, i) => <>{i > 0 && (i === c.sources.length - 1 ? " and " : ", ")}<a href={s.href}>{s.label}</a></>)} in {c.checked}. Plans and features change, so check there before you decide.
+        </p>
+      </div>
+    </section>
+
+    <section class="band band-3" aria-labelledby="cmp-points-h">
+      <canvas class="seam" data-ridge-edge="r3" data-seed="3" aria-hidden="true"></canvas>
+      <div class="wrap">
+        <div class="sec-head" data-reveal><h2 class="t-h2" id="cmp-points-h">{c.pointsHead}</h2></div>
+        <ul class="cmp-points">
+          {c.points.map((p) => <li data-reveal><h3>{p.title}</h3><p>{p.body}</p></li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="band band-4" aria-labelledby="cmp-faq-h">
+      <canvas class="seam" data-ridge-edge="r4" data-seed="2" aria-hidden="true"></canvas>
+      <div class="wrap">
+        {imp && (
+          <div class="cmp-imp" data-reveal>
+            <img src={`/logos/${imp.file}`} alt="" width="40" height="40" loading="lazy" decoding="async" />
+            <div>
+              <h2 class="t-h3">Bring your {imp.name} notes with you</h2>
+              <p>{c.importLead}</p>
+              <ul class="cmp-pills" aria-label="What comes across">
+                {imp.carries.map((x) => <li class="chip">{x}</li>)}
+              </ul>
+            </div>
+          </div>
+        )}
+        <div class="sec-head" data-reveal><h2 class="t-h2" id="cmp-faq-h">Questions</h2></div>
+        <dl class="cmp-faq">
+          {c.faq.map((f) => <div data-reveal><dt>{f.q}</dt><dd>{f.a}</dd></div>)}
+        </dl>
+        <nav class="cmp-more" aria-label="Other comparisons" data-reveal>
+          <span class="t-cap">Also compare</span>
+          {others.map((o) => <a href={`/${o.slug}/`}>{o.name}<Icon name="ArrowRight" class="i-xs nudge" /></a>)}
+        </nav>
+      </div>
+    </section>
+
+    <Close release={release} downloads={downloads} />
+  </main>
+</Base>
+<script>
+  import { startRidgelines } from "../scripts/ridgeline";
+  import { startReveal } from "../scripts/reveal";
+  startRidgelines();
+  startReveal();
+</script>

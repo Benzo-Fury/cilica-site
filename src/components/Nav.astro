@@ -6,16 +6,17 @@ import { repoUrl } from "../lib/release";
 import type { Downloads } from "../islands/DownloadButton.tsx";
 interface Props { downloads: Downloads }
 const { downloads } = Astro.props;
-// Only the top of the page: what it does, the meeting notes, and what it costs.
+// On other pages the section links go back to the home page; Pricing is on every page.
+const home = Astro.url.pathname === "/";
 const links = [
-  { href: "#cilica", label: "Features" },
-  { href: "#meetings", label: "Meetings" },
+  { href: home ? "#cilica" : "/#cilica", label: "Features" },
+  { href: home ? "#meetings" : "/#meetings", label: "Meetings" },
   { href: "#download", label: "Pricing" },
 ];
 ---
 <header class="nav" data-nav>
   <div class="nav-in glass-strong sq">
-    <a class="nav-brand" href="#top" aria-label="Cilica, back to top">
+    <a class="nav-brand" href={home ? "#top" : "/"} aria-label={home ? "Cilica, back to top" : "Cilica home"}>
       <Logo size={28} />
       <span>Cilica</span>
     </a>

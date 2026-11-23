@@ -585,3 +585,56 @@
 .foot-links a:hover { color: var(--ink); }
 .foot-note { width: 100%; font-size: 12px; color: var(--ink-3); }
 @media (prefers-reduced-motion: reduce) { .det-jar.in .coin { animation: none; } .island-more, .island-title, .jar-fill { transition: none !important; } }
+
+/* ───────── Comparison pages (/granola-alternative/ and friends) ───────── */
+.cmp-top > .wrap { padding-top: calc(64px + clamp(40px, 4vw + 4svh, 140px) + env(safe-area-inset-top, 0px)); }
+.cmp-top-in { display: grid; gap: 20px; justify-items: start; }
+.cmp-h { font-size: clamp(38px, 5.2vw, 64px); max-width: 18ch; }
+.cmp-act { justify-content: flex-start; }
+.cmp-crumbs ol { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; font-size: 13px; line-height: 18px; color: var(--ink-3); }
+.cmp-crumbs li + li::before { content: "/"; margin-right: 6px; color: var(--ink-4); }
+.cmp-crumbs a { color: var(--ink-2); text-decoration: none; }
+.cmp-crumbs a:hover { color: var(--ink); }
+
+.cmp-card { border-radius: calc(20px * var(--sq)); background: var(--bg-raised); box-shadow: inset 0 0 0 0.5px var(--line-strong), var(--shadow-xs); overflow: hidden; }
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 23px; }
+.cmp-table th, .cmp-table td { padding: 16px 20px; text-align: left; vertical-align: top; }
+.cmp-table thead th { font-size: 14px; font-weight: 620; color: var(--ink); }
+.cmp-table tbody tr { border-top: 0.5px solid var(--line); }
+.cmp-table tbody th { width: 26%; font-weight: 560; color: var(--ink); }
+.cmp-table tbody td { width: 37%; color: var(--ink-2); }
+.cmp-table tbody td:first-of-type { color: var(--ink); }
+.cmp-src { margin-top: 16px; font-size: 13px; line-height: 19px; color: var(--ink-3); max-width: 70ch; }
+.cmp-src a { color: var(--ink-2); }
+@media (max-width: 640px) {
+  .cmp-table thead { display: none; }
+  .cmp-table tbody tr { display: grid; gap: 8px; padding: 16px 18px; }
+  .cmp-table tbody tr:first-child { border-top: 0; }
+  .cmp-table th, .cmp-table td { padding: 0; width: auto !important; }
+  .cmp-table tbody td { display: grid; gap: 2px; }
+  .cmp-table tbody td::before { content: attr(data-label); font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ink-3); }
+}
+
+.cmp-points { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 4vw, 48px) clamp(32px, 5vw, 72px); }
+.cmp-points h3 { font-size: 17px; line-height: 23px; font-weight: 620; letter-spacing: -0.012em; }
+.cmp-points p { margin-top: 8px; font-size: 15px; line-height: 23px; color: var(--ink-2); max-width: 52ch; }
+@media (max-width: 760px) { .cmp-points { grid-template-columns: minmax(0, 1fr); } }
+
+.cmp-imp { display: flex; gap: 18px; align-items: flex-start; max-width: 760px; margin-bottom: clamp(64px, 8vw, 104px); padding: 24px; border-radius: calc(18px * var(--sq)); background: var(--bg-canvas); box-shadow: inset 0 0 0 0.5px var(--line-strong); }
+.cmp-imp img { flex: none; border-radius: calc(9px * var(--sq)); }
+.cmp-imp p { margin-top: 6px; font-size: 15px; line-height: 23px; color: var(--ink-2); max-width: 56ch; }
+.cmp-pills { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+@media (max-width: 480px) { .cmp-imp { flex-direction: column; padding: 18px; } }
+
+.cmp-faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px clamp(32px, 5vw, 72px); margin: 0; }
+.cmp-faq dt { font-size: 17px; line-height: 23px; font-weight: 620; letter-spacing: -0.012em; color: var(--ink); }
+.cmp-faq dd { margin: 8px 0 0; font-size: 15px; line-height: 23px; color: var(--ink-2); max-width: 52ch; }
+@media (max-width: 760px) { .cmp-faq { grid-template-columns: minmax(0, 1fr); } }
+
+.cmp-more { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: clamp(48px, 6vw, 72px); padding-top: 24px; border-top: 0.5px solid var(--line); }
+.cmp-more a { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 520; color: var(--ink-2); text-decoration: none; transition: color var(--dur-fast) var(--ease-out); }
+.cmp-more a:hover { color: var(--ink); }
+.cmp-more .nudge { transition: transform var(--spring-snappy-dur) var(--spring-snappy); }
+
+.foot-cmp { flex-basis: 100%; }
+.foot-cmp a[aria-current="page"] { color: var(--ink); }

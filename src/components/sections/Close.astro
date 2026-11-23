@@ -5,6 +5,7 @@ import DownloadButton, { type Downloads } from "../../islands/DownloadButton.tsx
 import ThemeToggle from "../../islands/ThemeToggle.tsx";
 import { MacLogo, WindowsLogo, LinuxLogo, GitHubLogo } from "../../islands/os.tsx";
 import { mb, repoUrl, releasesUrl, type Release } from "../../lib/release";
+import { comparisons } from "../../lib/compare";
 interface Props { release: Release; downloads: Downloads }
 const { release, downloads } = Astro.props;
 const analytics = Boolean(import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN);
@@ -60,6 +61,9 @@ const others = [
         <a href={`${repoUrl}/issues`}>Report a problem</a>
       </nav>
       <ThemeToggle client:idle />
+      <nav class="foot-links foot-cmp" aria-label="Compare">
+        {comparisons.map((c) => <a href={`/${c.slug}/`} aria-current={Astro.url.pathname === `/${c.slug}/` ? "page" : undefined}>{c.name}</a>)}
+      </nav>
       <p class="foot-note">{analytics ? "This site sets no cookies and counts visits without identifying anyone." : "This site sets no cookies and doesn't track you."} © 2026 Cilica.</p>
     </div>
   </footer>
