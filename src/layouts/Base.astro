@@ -5,12 +5,28 @@ import "../styles/tokens.css";
 import "../styles/site.css";
 import "../styles/ui.css";
 import "../styles/sections.css";
+// The same hashed file the Inter stylesheet points at; preloaded because the hero words are the LCP.
+import interLatin from "@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2?url";
+import { getRelease } from "../lib/release";
+import { jsonLd, siteGraph } from "../lib/schema";
 
-interface Props { title: string; description: string }
-const { title, description } = Astro.props;
+interface Props {
+  title: string;
+  description: string;
+  /** Extra schema.org nodes for this page; the organisation, website and app are always included. */
+  schema?: Record<string, unknown>[];
+  /** Keep the page out of search results (the 404). */
+  noindex?: boolean;
+}
+const { title, description, schema = [], noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const og = new URL("/og.png", Astro.site);
+const ogAlt = "The Cilica app icon above the words \"Notes that tidy themselves.\" and cilica.si, over soft taupe ridges.";
 const analytics = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN as string | undefined;
+// Search Console's HTML-tag verification, only when the deploy sets it.
+const googleVerify = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION as string | undefined;
+const release = await getRelease();
+const ld = jsonLd([...siteGraph(release), ...schema]);
 ---
 <!doctype html>
 <html lang="en-GB" data-theme="light">
@@ -19,20 +35,28 @@ const analytics = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN as string | undefined;
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    {googleVerify && <meta name="google-site-verification" content={googleVerify} />}
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#fffdfa" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Cilica" />
+    <meta property="og:locale" content="en_GB" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={og} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={og} />
+    <meta name="twitter:image:alt" content={ogAlt} />
     <script is:inline>
       (function () {
         var d = document.documentElement;
@@ -42,6 +66,7 @@ const analytics = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN as string | undefined;
       })();
     </script>
     {analytics && <script defer data-domain={analytics} src="https://plausible.io/js/script.js"></script>}
+    {!noindex && <script type="application/ld+json" set:html={ld} />}
     <slot name="head" />
   </head>
   <body>

@@ -9,6 +9,8 @@ export interface Release {
   version: string;
   tag: string;
   pageUrl: string;
+  /** ISO date the release was published, e.g. "2026-11-17". */
+  published?: string;
   mac?: Asset;
   win?: Asset;
   appImage?: Asset;
@@ -25,6 +27,7 @@ const FALLBACK: Release = {
   version: FALLBACK_VERSION,
   tag: `v${FALLBACK_VERSION}`,
   pageUrl: `${releasesUrl}/tag/v${FALLBACK_VERSION}`,
+  published: "2026-11-17",
   mac: fallbackAsset("Cilica_0.10.0_aarch64.dmg", 21850756),
   win: fallbackAsset("Cilica_0.10.0_x64_Setup.exe", 29195264),
   appImage: fallbackAsset("Cilica_0.10.0_amd64.AppImage", 103066104),
@@ -46,13 +49,14 @@ async function load(): Promise<Release> {
     if (token) headers.Authorization = `Bearer ${token}`;
     const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers, signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error(`GitHub answered ${res.status}`);
-    const data = (await res.json()) as { tag_name: string; html_url: string; assets: { name: string; browser_download_url: string; size: number }[] };
+    const data = (await res.json()) as { tag_name: string; html_url: string; published_at?: string; assets: { name: string; browser_download_url: string; size: number }[] };
     const assets: Asset[] = data.assets.map((a) => ({ name: a.name, url: a.browser_download_url, size: a.size }));
     const pick = (re: RegExp) => assets.find((a) => re.test(a.name));
     return {
       version: data.tag_name.replace(/^v/, ""),
       tag: data.tag_name,
       pageUrl: data.html_url,
+      published: data.published_at?.slice(0, 10),
       mac: pick(/aarch64\.dmg$/),
       win: pick(/_Setup\.exe$/),
       appImage: pick(/\.AppImage$/),
@@ -67,3 +71,13 @@ async function load(): Promise<Release> {
 
 /** "21.9 MB" */
 export const mb = (bytes: number) => `${(bytes / 1_000_000).toFixed(bytes >= 100_000_000 ? 0 : 1)} MB`;
+
+/** What the download buttons need: one file per system, with its size. */
+export function downloadsFor(release: Release): import("../islands/DownloadButton.tsx").Downloads {
+  return {
+    mac: release.mac && { url: release.mac.url, size: mb(release.mac.size) },
+    win: release.win && { url: release.win.url, size: mb(release.win.size) },
+    linux: release.appImage && { url: release.appImage.url, size: mb(release.appImage.size) },
+    fallback: releasesUrl + "/latest",
+  };
+}

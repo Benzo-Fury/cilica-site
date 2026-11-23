@@ -1,0 +1,30 @@
+---
+/** GitHub Pages serves this for any missing path, with a 404 status. Kept out of search results. */
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Icon from "../components/Icon.astro";
+import Close from "../components/sections/Close.astro";
+import { getRelease, downloadsFor } from "../lib/release";
+
+const release = await getRelease();
+const downloads = downloadsFor(release);
+---
+<Base title="Page not found | Cilica" description="This page doesn't exist. Go to the Cilica home page to download the app." noindex>
+  <Nav downloads={downloads} />
+  <main>
+    <section class="band band-1 cmp-top" id="top" aria-labelledby="nf-h">
+      <div class="wrap cmp-top-in">
+        <h1 class="t-hero cmp-h" id="nf-h">This page doesn't exist.</h1>
+        <p class="t-lead">The link may be old or mistyped. Everything about Cilica is on the home page.</p>
+        <a class="btn btn-primary btn-lg" href="/">Go to the home page<Icon name="ArrowRight" class="i-sm nudge" /></a>
+      </div>
+    </section>
+    <Close release={release} downloads={downloads} />
+  </main>
+</Base>
+<script>
+  import { startRidgelines } from "../scripts/ridgeline";
+  import { startReveal } from "../scripts/reveal";
+  startRidgelines();
+  startReveal();
+</script>
