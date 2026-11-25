@@ -344,12 +344,12 @@
 .ng-graph-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 16px 20px 0; }
 .ng-graph-title { font-size: 15px; font-weight: 620; letter-spacing: -0.012em; color: var(--ink); }
 .ng-graph-count { font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.ng-graph > svg { display: block; width: 100%; height: auto; padding: 4px 10px 0; box-sizing: border-box; }
+.ng-map > svg { display: block; width: 100%; height: auto; padding: 4px 10px 0; box-sizing: border-box; }
 .ng-edge { stroke: var(--ink-3); stroke-width: 1.4; }
 .ng-edge.is-bg { stroke: var(--line-strong); stroke-width: 1; }
 .ng-edge.is-new { stroke: var(--ink-4); stroke-dasharray: 3 3; }
 .ng-edge.is-tag { stroke: color-mix(in srgb, var(--home-accent) 55%, transparent); }
-.ng-graph > svg { user-select: none; -webkit-user-select: none; }
+.ng-map > svg { user-select: none; -webkit-user-select: none; }
 .ng-node { cursor: grab; touch-action: none; }
 .ng-graph.is-dragging, .ng-graph.is-dragging .ng-node { cursor: grabbing; }
 .ng-graph .ng-node circle.ng-hit { fill: transparent; stroke: none; }
@@ -379,15 +379,36 @@
 }
 .ng-pill:hover { background: color-mix(in srgb, var(--glow-soft) 70%, var(--glow-text) 10%); }
 .ng-pill:active { transform: scale(0.97); }
+/* Smaller screens: the map shrinks to a picture-in-picture over the note's lower corner (like the call
+   over the transcript), and the keys and hint sit under the window. The note scrolls clear of it. */
 @media (max-width: 1080px) {
-  .ng-graph { position: relative; top: auto; right: auto; width: auto; max-width: 520px; margin: -32px 16px 0 auto; }
-  .ng-editor .cm-scroller { padding-right: clamp(20px, 3vw, 40px); }
+  .ng { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .ng-win { grid-area: 1 / 1; }
+  .ng-graph { display: contents; }
+  .ng-map {
+    grid-area: 1 / 1; align-self: end; justify-self: end; z-index: 2; width: 300px; translate: 8px 28px;
+    background: var(--glass-fill-strong); backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border-radius: calc(16px * var(--sq)); box-shadow: inset 0 0 0 0.5px var(--glass-edge), var(--shadow-overlay); overflow: hidden;
+  }
+  .ng-map > svg { padding: 0 6px 6px; }
+  .ng-graph-head { padding: 12px 14px 0; }
+  .ng-keys { margin-top: 44px; padding: 0 4px; }
+  .ng-hint { border-top: 0; padding: 12px 4px 0; }
+  .ng-editor .cm-scroller { padding-right: clamp(20px, 3vw, 40px); padding-bottom: 240px; }
   .ng-editor { height: 560px; }
 }
 @media (max-width: 560px) {
-  .ng-graph { margin: 16px 0 0; }
-  .ng-editor { height: 480px; }
+  .ng-map { width: min(244px, 72vw); translate: 6px 24px; border-radius: calc(15px * var(--sq)); }
+  .ng-map > svg { padding: 0 16px 4px; overflow: visible; }
+  .ng-graph-head { flex-direction: column; gap: 0; padding: 9px 11px 0; }
+  .ng-graph-title { font-size: 13px; line-height: 17px; }
+  .ng-graph-count { font-size: 11px; line-height: 15px; }
+  .ng-node text { font-size: 14px; stroke-width: 4px; }
+  .ng-node.is-this text { font-size: 15px; }
+  .ng-keys { margin-top: 36px; }
+  .ng-editor { height: 500px; }
   .ng-editor .cm-editor { font-size: 15.5px; }
+  .ng-editor .cm-scroller { padding-bottom: 210px; }
 }
 /* ⌘K search demo (The small things) */
 .search { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 560px; }

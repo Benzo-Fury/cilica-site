@@ -456,6 +456,8 @@ export default function NoteGraph() {
       </div>
 
       <aside className={`ng-graph sq${dragging ? " is-dragging" : ""}`} aria-label="Graph of this note's links">
+        {/* On smaller screens only the map floats over the note; the keys and hint drop below it. */}
+        <div className="ng-map">
         <div className="ng-graph-head">
           <span className="ng-graph-title">Your notes, as a map</span>
           <span className="ng-graph-count" aria-live="polite">{count === 1 ? "1 linked note" : `${count} linked notes`}</span>
@@ -522,6 +524,7 @@ export default function NoteGraph() {
             <text x={c.x} y={c.y + 30} textAnchor="middle">{THIS_NOTE}</text>
           </g>
         </svg>
+        </div>
         <div className="graph-foot ng-keys">
           <span className="graph-key"><i />Linked</span>
           <span className="graph-key"><i className="k-off" />Not linked</span>
