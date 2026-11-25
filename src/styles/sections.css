@@ -254,7 +254,9 @@
    picture-in-picture window. Both follow the page theme. */
 .mc { position: relative; padding-top: 32px; }
 .mc-tx { display: flex; flex-direction: column; height: 480px; margin-right: 72px; border-radius: calc(18px * var(--sq)); background: var(--bg-canvas); box-shadow: var(--shadow-overlay), 0 0 0 0.5px var(--line-strong); overflow: hidden; }
-.mc-lines { position: relative; flex: 1; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40px); mask-image: linear-gradient(to bottom, transparent, #000 40px); }
+/* overflow-anchor: the lines move up as the transcript grows; if the browser anchored scrolling to one,
+   the page would scroll along with it. */
+.mc-lines { position: relative; flex: 1; overflow: hidden; overflow-anchor: none; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40px); mask-image: linear-gradient(to bottom, transparent, #000 40px); }
 .mc-stack { position: absolute; left: 0; right: 0; bottom: 0; display: grid; gap: 16px; padding: 20px 24px 24px; }
 .mc-l { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 12px; animation: rise var(--spring-smooth-dur) var(--spring-smooth) both; }
 .mc-av { display: grid; place-items: center; width: 24px; height: 24px; margin-top: 1px; border-radius: 50%; background: var(--c-s); color: var(--c); font-size: 9.5px; font-weight: 620; }
