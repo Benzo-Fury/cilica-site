@@ -131,9 +131,11 @@
 .appdemo-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; padding: 0 4px; flex-wrap: wrap; }
 @media (max-width: 1080px) { .appwin { grid-template-columns: minmax(0, 1fr) 320px; } .aw-side { display: none; } }
 @media (max-width: 760px) {
+  /* Phones show the note on its own; the Cilica panel is covered by the next section. */
   .appwin { grid-template-columns: minmax(0, 1fr); height: auto; }
-  .aw-panel { border-left: 0; border-top: 0.5px solid var(--line-strong); }
-  .aw-thread { min-height: 300px; }
+  .aw-panel { display: none; }
+  /* The caption and Play again speak to the panel's Accept, so they go with it. */
+  .appdemo-foot { display: none; }
   .aw-doc { padding: 24px 20px 28px 28px; }
   .aw-seg { display: none; }
   .aw-title { font-size: 22px; line-height: 28px; }
